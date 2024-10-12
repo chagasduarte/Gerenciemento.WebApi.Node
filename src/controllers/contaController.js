@@ -70,3 +70,19 @@ export const deleteConta = async (req, res) => {
         res.status(500).send('Erro ao deletar tarefa');
     }
 };
+
+
+export const putConta = async (req, res) => {
+    const { id } = req.params;
+    const { Id, Nome, Descricao, Credito, Debito, Mes, Ano} = req.body;
+    try {
+        const result = await pool.query('UPDATE "Contas" SET "Nome" = $2, "Descricao" = $3, "Credito" = $4, "Debito" = $5, "Mes" = $6, "Ano" = $7 WHERE "Id" = $1', [id, Nome, Descricao, Credito, Debito, Mes, Ano]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({ mensagem: 'Conta não encontrada' });
+        }
+        res.status(204).send();
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro ao deletar tarefa');
+    }
+};
