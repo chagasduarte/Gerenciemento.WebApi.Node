@@ -29,9 +29,13 @@ export const getDespesasByAno = async (req, res) => {
 
 // Buscar uma despesa parceladas
 export const getDespesasParceladas = async (req, res) => {
-    const { ano } = req.query;
+    const { mes, ano } = req.query;
     try {
-        const result = await pool.query('SELECT * FROM "Despesas" WHERE "IsParcelada" and EXTRACT(YEAR FROM "DataCompra") = $1', [ano]);
+        const result = await pool.query(`SELECT distinct d.* FROM "Despesas" d
+                                         INNER JOIN "Parcelas" p 
+                                            ON p."DespesaId" = d."Id"
+                                            AND EXTRACT(MONTH FROM p."DataVencimento") = $2
+                                         WHERE EXTRACT(YEAR FROM p."DataVencimento") = $1`, [ano, mes]);
         if (result.rows.length === 0) {
             return res.status(404).send('Despesa não encontrada');
         }

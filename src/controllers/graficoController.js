@@ -1,7 +1,7 @@
 import pool from '../database/db.js';
 import query from '../query/consultaInfoGraficos.js'
+import queryPizza from '../query/consultaInfoGraficosPizza.js'
 
-// Buscar todas as Parcelas
 export const getAllDados = async (req, res) => {
     const ano = req.query;
     
@@ -14,3 +14,14 @@ export const getAllDados = async (req, res) => {
     }
 };
 
+export const getAllDadosPizza = async (req, res) => {
+    const ano = req.query;
+    
+    try {
+        const result = await pool.query(queryPizza(ano.ano));
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(ano);
+    }
+};

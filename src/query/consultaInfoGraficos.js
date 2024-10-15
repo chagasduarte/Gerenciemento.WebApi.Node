@@ -5,7 +5,7 @@ SELECT
    Id,
    TO_CHAR(TO_DATE(CONCAT(${ano},'-', Id, '-01'), 'YYYY-MM-DD'), 'Mon') as nomeAbrev,
    sum(Saida) Saida,
-   sum(Entrada) Entradas,
+   sum(Entrada) Entrada,
    sum(Progressao) Progressao
 FROM (
     SELECT 
