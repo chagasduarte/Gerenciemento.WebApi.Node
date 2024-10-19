@@ -95,7 +95,32 @@ export const getDespesaById = async (req, res) => {
 
 // Criar uma nova despesa
 export const createDespesa = async (req, res) => {
-    const { Nome, Descricao, TipoDespesa, IsParcelada, ValorTotal, ValorPago, DataCompra, IsPaga } = req.body;
+    const { nome, descricao, tipoDespesa, isParcelada, valorTotal, valorPago, dataCompra } = req.body;
+    const IsParcelada = isParcelada === undefined? false : isParcelada;
+    const IsPaga = false;
+    const ValorPago = valorPago === undefined? 0 : valorPago;
+    // Validação simples
+    if (!nome || !descricao || valorTotal === undefined || !dataCompra) {
+        return res.status(400).send('Todos os campos obrigatórios devem ser preenchidos');
+    }
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO "Despesas" ("Nome", "Descricao", "TipoDespesa", "IsParcelada", "ValorTotal", "ValorPago", "DataCompra", "IsPaga") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [nome, descricao, tipoDespesa, IsParcelada, valorTotal, ValorPago, new Date(dataCompra), IsPaga]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro ao criar despesa');
+    }
+};
+
+
+// Atualizar uma nova despesa
+export const updateDespesa = async (req, res) => {
+    const { id } = req.params;
+    const { Id, Nome, Descricao, TipoDespesa, IsParcelada, ValorTotal, ValorPago, DataCompra, IsPaga } = req.body;
 
     // Validação simples
     if (!Nome || !Descricao || ValorTotal === undefined || ValorPago === undefined || !DataCompra) {
@@ -104,8 +129,17 @@ export const createDespesa = async (req, res) => {
 
     try {
         const result = await pool.query(
-            'INSERT INTO "Despesas" (Nome, Descricao, TipoDespesa, IsParcelada, ValorTotal, ValorPago, DataCompra, IsPaga) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-            [Nome, Descricao, TipoDespesa, IsParcelada, ValorTotal, ValorPago, new Date(DataCompra), IsPaga]
+           `UPDATE "Despesas" 
+            SET "Nome" = $2, 
+                "Descricao" = $3, 
+                "TipoDespesa" = $4, 
+                "IsParcelada" = $5, 
+                "ValorTotal" = $6, 
+                "ValorPago" = $7, 
+                "DataCompra" = $8, 
+                "IsPaga" = $9 
+            WHERE "Id" = $1`,
+            [id, Nome, Descricao, TipoDespesa, IsParcelada, ValorTotal, ValorPago, new Date(DataCompra), IsPaga]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {

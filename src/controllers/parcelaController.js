@@ -1,4 +1,5 @@
 import pool from '../database/db.js';
+import insereParcelas from '../query/insereParcelas.js';
 
 // Buscar todas as Parcelas
 export const getAllParcelas = async (req, res) => {
@@ -52,22 +53,36 @@ export const getParcelaById = async (req, res) => {
 
 // Criar uma nova Parcela
 export const createParcela = async (req, res) => {
-    const { Nome, Valor, ContaId, DataDebito, Status, IsFixo } = req.body;
+    const { DespesaId, Valor, DataVencimento, IsPaga } = req.body;
 
     // Validação simples
-    if (!Nome || Valor === undefined || !ContaId || !DataDebito) {
+    if (DespesaId === undefined || Valor === undefined || !DataVencimento, IsPaga === undefined) {
         return res.status(400).send('Todos os campos obrigatórios devem ser preenchidos');
     }
-
     try {
-        const result = await pool.query(
-            'INSERT INTO "Parcelas" (Nome, Valor, ContaId, DataDebito, Status, IsFixo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [Nome, Valor, ContaId, new Date(DataDebito), Status, IsFixo]
-        );
+        const result = await pool.query('INSERT INTO "Parcelas" (DespesaId, Valor, DataVencimento, IsPaga) VALUES ($1, $2, $3, $4) RETURNING *', [DespesaId, Valor, DataVencimento, IsPaga]);
         res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error(err);
         res.status(500).send('Erro ao criar Parcela');
+    }
+};
+
+// Criar uma nova Parcela
+export const createParcelas = async (req, res) => {
+    const { DataCompra, IdDespesa, QtdParcelas, Valor } = req.body;
+
+    // Validação simples
+    if ( Valor === undefined || !QtdParcelas || !IdDespesa || !DataCompra) {
+        return res.status(400).send('Todos os campos obrigatórios devem ser preenchidos');
+    }
+    
+    try {
+        const result = await pool.query(insereParcelas(DataCompra, IdDespesa, QtdParcelas, Valor));
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
     }
 };
 

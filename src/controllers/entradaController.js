@@ -27,17 +27,17 @@ export const getEntradaById = async (req, res) => {
 
 // POST: /api/Entradas
 export const createEntrada = async (req, res) => {
-    const { Nome, Valor, ContaId, DataDebito, Status, IsFixo } = req.body;
+    const { nome, valor, contaId, dataDebito, status, isFixo } = req.body;
 
     // Validação simples
-    if (!Nome || Valor === undefined || !ContaId || !DataDebito) {
+    if (!nome || valor === undefined || !contaId || !dataDebito) {
         return res.status(400).send('Todos os campos obrigatórios devem ser preenchidos');
     }
 
     try {
         const result = await pool.query(
-            'INSERT INTO "Entradas" (Nome, Valor, ContaId, DataDebito, Status, IsFixo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [Nome, Valor, ContaId, new Date(DataDebito), Status, IsFixo]
+            'INSERT INTO "Entradas" ("Nome", "Valor", "ContaId", "DataDebito", "Status", "IsFixo") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [nome, valor, contaId, new Date(dataDebito), status, isFixo]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -48,24 +48,23 @@ export const createEntrada = async (req, res) => {
 
 // PUT: /api/Entradas/:id
 export const updateEntrada = async (req, res) => {
-    const { DespesaId, Valor, DataVencimento, IsPaga } = req.body;
+    const {id} = req.params
+    const { Nome , Valor , Status , IsFixo , DataDebito , ContaId } = req.body;
 
-    if (!DespesaId || !Valor || !DataVencimento || IsPaga === undefined) {
+    if (!Nome || !Valor || !DataDebito || IsFixo === undefined || !ContaId || Status === undefined) {
         return res.status(400).json({ message: 'Dados inválidos' });
     }
 
     try {
-        const EntradaAtualizada = await Entrada.findByIdAndUpdate(
-            req.params.id,
-            { DespesaId, Valor, DataVencimento, IsPaga },
-            { new: true, runValidators: true }
-        );
+        const result = await pool.query('UPDATE "Entradas" SET "Nome" = $2, "Valor" = $3, "Status" = $4, "IsFixo" = $5, "DataDebito" = $6, "ContaId" = $7 WHERE "Id" = $1', 
+            [id, Nome , Valor , Status , IsFixo , DataDebito , ContaId]);
 
-        if (!EntradaAtualizada) {
+
+        if (!result) {
             return res.status(404).json({ message: 'Entrada não encontrada' });
         }
 
-        res.status(200).json(EntradaAtualizada);
+        res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao atualizar Entrada', error });
     }

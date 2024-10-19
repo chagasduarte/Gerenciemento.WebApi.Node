@@ -5,7 +5,7 @@ import {
     getAllParcelasByMes,
     getAllParcelasByDespesa,
     getParcelaById,
-    createParcela,
+    createParcelas,
     deleteParcela
 } from '../controllers/parcelaController.js';
 
@@ -15,7 +15,7 @@ router.get('/', getAllParcelas);
 router.get('/Despesa/:id', getAllParcelasByDespesa);
 router.get('/Mes',getAllParcelasByMes);
 router.get('/:id', getParcelaById);
-router.post('/', createParcela);
+router.post('/', createParcelas);
 router.delete('/', deleteParcela);
 
 export default router;

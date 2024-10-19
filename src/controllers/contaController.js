@@ -39,16 +39,16 @@ export const getContaById = async (req, res) => {
 
 // Criar uma nova conta
 export const createConta = async (req, res) => {
-    const { Nome, Descricao, Credito, Debito, Mes, Ano } = req.body;
+    const { nome, descricao, credito, debito, mes, ano } = req.body;
 
-    if (!Nome || !Descricao || !Credito || !Debito || !Mes || !Ano) {
+    if (!nome || !descricao || !credito || !debito || !mes || !ano) {
         return res.status(400).send('Todos os campos são obrigatórios');
     }
 
     try {
         const result = await pool.query(
-            'INSERT INTO "Contas" (Nome, Descricao, Credito, Debito, Mes, Ano) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [Nome, Descricao, Credito, Debito, Mes, Ano]
+            'INSERT INTO "Contas" ("Nome", "Descricao", "Credito", "Debito", "Mes", "Ano") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [nome, descricao, credito, debito, mes, ano]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {

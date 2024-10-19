@@ -8,6 +8,7 @@ import {
     getDespesasByMes,
     getDespesasParceladas,
     getDespesasAdicionais,
+    updateDespesa,
     deleteDespesa
 } from '../controllers/despesaController.js';
 
@@ -20,6 +21,7 @@ router.get('/Parceladas', getDespesasParceladas);
 router.get('/Adicionais', getDespesasAdicionais);
 router.get('/:id', getDespesaById);
 router.post('/', createDespesa);
+router.put('/:id', updateDespesa);
 router.delete('/:id', deleteDespesa);
 
 export default router;
