@@ -89,7 +89,7 @@ export const createParcelas = async (req, res) => {
 export const deleteParcela = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('DELETE FROM "Parcelas" WHERE "Id" = $1', [id]);
+        const result = await pool.query('DELETE FROM "Parcelas" WHERE "DespesaId" = $1', [id]);
         if (result.rowCount === 0) {
             return res.status(404).json({ mensagem: 'Parcela não encontrada' });
         }

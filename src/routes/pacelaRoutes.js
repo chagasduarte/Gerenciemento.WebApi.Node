@@ -16,6 +16,6 @@ router.get('/Despesa/:id', getAllParcelasByDespesa);
 router.get('/Mes',getAllParcelasByMes);
 router.get('/:id', getParcelaById);
 router.post('/', createParcelas);
-router.delete('/', deleteParcela);
+router.delete('/Despesa/:id', deleteParcela);
 
 export default router;

@@ -72,11 +72,9 @@ export const updateEntrada = async (req, res) => {
 
 // DELETE: /api/Entradas/:id
 export const deleteEntrada = async (req, res) => {
+    const {id} = req.params
     try {
-        const Entrada = await Entrada.findByIdAndDelete(req.params.id);
-        if (!Entrada) {
-            return res.status(404).json({ message: 'Entrada não encontrada' });
-        }
+        const Entrada = await pool.query('DELETE FROM "Entradas" WHERE "Id" = $1',[id]);
         res.status(200).json({ message: 'Entrada removida com sucesso' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao deletar Entrada', error });
