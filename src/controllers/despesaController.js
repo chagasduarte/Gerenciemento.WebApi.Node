@@ -28,7 +28,28 @@ export const getDespesasByAno = async (req, res) => {
 };
 
 // Buscar uma despesa parceladas
-export const getDespesasParceladas = async (req, res) => {
+export const getDespesasParceladasNaoPagas = async (req, res) => {
+    const { mes, ano } = req.query;
+    try {
+        const result = await pool.query(`SELECT distinct d.* FROM "Despesas" d
+                                         INNER JOIN "Parcelas" p 
+                                            ON p."DespesaId" = d."Id"
+                                            AND EXTRACT(MONTH FROM p."DataVencimento") = $2
+                                         WHERE EXTRACT(YEAR FROM p."DataVencimento") = $1 
+                                            AND (p."IsPaga" = 0 OR p."IsPaga" = 3)`, [ano, mes]);
+        if (result.rows.length === 0) {
+            return res.status(404).send('Despesa não encontrada');
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro ao buscar a despesa');
+    }
+};
+
+
+// Buscar uma despesa parceladas
+export const getDespesasParceladasTodas = async (req, res) => {
     const { mes, ano } = req.query;
     try {
         const result = await pool.query(`SELECT distinct d.* FROM "Despesas" d

@@ -100,3 +100,17 @@ export const deleteParcela = async (req, res) => {
     }
 }
 
+export const putParcela = async (req, res) => {
+    const { id } = req.params;
+    const {IsPaga} = req.body;
+    try {
+        const result = await pool.query('UPDATE "Parcelas" SET "IsPaga" = $2 WHERE "Id" = $1', [id, IsPaga]);
+        if (!result) {
+            return res.status(404).json({ message: 'Parcela não encontrada' });
+        }
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao atualizar Parcela', error });
+    }
+}

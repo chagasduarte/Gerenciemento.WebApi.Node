@@ -6,7 +6,8 @@ import {
     getAllParcelasByDespesa,
     getParcelaById,
     createParcelas,
-    deleteParcela
+    deleteParcela,
+    putParcela
 } from '../controllers/parcelaController.js';
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get('/Mes',getAllParcelasByMes);
 router.get('/:id', getParcelaById);
 router.post('/', createParcelas);
 router.delete('/Despesa/:id', deleteParcela);
+router.put('/:id', putParcela);
 
 export default router;

@@ -6,7 +6,8 @@ import {
     createDespesa,
     getDespesasByAno,
     getDespesasByMes,
-    getDespesasParceladas,
+    getDespesasParceladasTodas,
+    getDespesasParceladasNaoPagas,
     getDespesasAdicionais,
     updateDespesa,
     deleteDespesa
@@ -17,7 +18,8 @@ const router = express.Router();
 router.get('/', getAllDespesas);
 router.get('/Mes', getDespesasByMes);
 router.get('/Ano', getDespesasByAno);
-router.get('/Parceladas', getDespesasParceladas);
+router.get('/Parceladas', getDespesasParceladasTodas);
+router.get('/ParceladasNaoPagas', getDespesasParceladasNaoPagas);
 router.get('/Adicionais', getDespesasAdicionais);
 router.get('/:id', getDespesaById);
 router.post('/', createDespesa);
