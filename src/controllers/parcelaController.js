@@ -15,8 +15,15 @@ export const getAllParcelas = async (req, res) => {
 // Buscar todas as Parcelas by Mes
 export const getAllParcelasByMes = async (req, res) => {
     const {mes, ano} = req.query;
+    let query = `SELECT * FROM "Parcelas" 
+                 WHERE (EXTRACT(YEAR FROM "DataVencimento") = ${ano} 
+                    AND EXTRACT(MONTH FROM "DataVencimento") = ${mes})`;
+       
+    if (mes == new Date().getUTCMonth() + 1 && ano == new Date().getUTCFullYear()) {
+        query += ` OR "IsPaga" = 3`;
+    }
     try {
-        const result = await pool.query('SELECT * FROM "Parcelas" WHERE EXTRACT(YEAR FROM "DataVencimento") = $1 AND EXTRACT(MONTH FROM "DataVencimento") = $2',[ano, mes]);
+        const result = await pool.query(query);
         res.json(result.rows);
     } catch (err) {
         console.error(err);

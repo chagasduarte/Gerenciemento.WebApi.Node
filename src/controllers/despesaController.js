@@ -37,9 +37,7 @@ export const getDespesasParceladasNaoPagas = async (req, res) => {
                                             AND EXTRACT(MONTH FROM p."DataVencimento") = $2
                                          WHERE EXTRACT(YEAR FROM p."DataVencimento") = $1 
                                             AND (p."IsPaga" = 0 OR p."IsPaga" = 3)`, [ano, mes]);
-        if (result.rows.length === 0) {
-            return res.status(404).send('Despesa não encontrada');
-        }
+
         res.json(result.rows);
     } catch (err) {
         console.error(err);
