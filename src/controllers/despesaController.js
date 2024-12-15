@@ -31,12 +31,27 @@ export const getDespesasByAno = async (req, res) => {
 export const getDespesasParceladasNaoPagas = async (req, res) => {
     const { mes, ano } = req.query;
     try {
-        const result = await pool.query(`SELECT distinct d.* FROM "Despesas" d
-                                         INNER JOIN "Parcelas" p 
-                                            ON p."DespesaId" = d."Id"
-                                            AND EXTRACT(MONTH FROM p."DataVencimento") = $2
-                                         WHERE EXTRACT(YEAR FROM p."DataVencimento") = $1 
-                                            AND (p."IsPaga" = 0 OR p."IsPaga" = 3)`, [ano, mes]);
+        const result = await pool.query(`SELECT 
+                                            d."Id",
+                                            d."Nome",
+                                            d."Descricao",
+                                            d."TipoDespesa",
+                                            d."IsParcelada",
+                                            d."ValorTotal",
+                                            d."DataCompra",
+                                            d."IsPaga",
+                                            d."ValorPago",
+                                            COUNT(pa."Id") AS "QuantidadeParcelas",
+                                            COUNT(CASE WHEN pa."IsPaga" = 1 THEN 1 END) AS "QuantidadeParcelasPagas"
+                                        FROM "Despesas" d
+                                        INNER JOIN "Parcelas" p 
+                                        ON p."DespesaId" = d."Id"
+                                        AND EXTRACT(MONTH FROM p."DataVencimento") = $2
+                                        AND EXTRACT(YEAR FROM p."DataVencimento") = 1
+                                        AND (p."IsPaga" = 0 OR p."IsPaga" = 3)
+                                        LEFT JOIN "Parcelas" pa ON pa."DespesaId" = d."Id" 
+                                        GROUP BY 
+                                            d."Id"`, [ano, mes]);
 
         res.json(result.rows);
     } catch (err) {
