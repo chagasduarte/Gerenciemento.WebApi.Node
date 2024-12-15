@@ -41,8 +41,8 @@ export const getDespesasParceladasNaoPagas = async (req, res) => {
                                             d."DataCompra",
                                             d."IsPaga",
                                             d."ValorPago",
-                                            COUNT(pa."Id") AS "QuantidadeParcelas",
-                                            COUNT(CASE WHEN pa."IsPaga" = 1 THEN 1 END) AS "QuantidadeParcelasPagas"
+                                            COUNT(pa."Id") AS "Parcelas",
+                                            COUNT(CASE WHEN pa."IsPaga" = 1 THEN 1 END) AS "ParcelasPagas"
                                         FROM "Despesas" d
                                         INNER JOIN "Parcelas" p 
                                         ON p."DespesaId" = d."Id"
