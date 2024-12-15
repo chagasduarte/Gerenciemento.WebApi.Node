@@ -47,7 +47,7 @@ export const getDespesasParceladasNaoPagas = async (req, res) => {
                                         INNER JOIN "Parcelas" p 
                                         ON p."DespesaId" = d."Id"
                                         AND EXTRACT(MONTH FROM p."DataVencimento") = $2
-                                        AND EXTRACT(YEAR FROM p."DataVencimento") = 1
+                                        AND EXTRACT(YEAR FROM p."DataVencimento") = $1
                                         AND (p."IsPaga" = 0 OR p."IsPaga" = 3)
                                         LEFT JOIN "Parcelas" pa ON pa."DespesaId" = d."Id" 
                                         GROUP BY 
