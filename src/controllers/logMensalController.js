@@ -33,6 +33,6 @@ export const postLog = async (req, res) => {
     }
     catch (err) {
         console.error(err);
-        res.status(500).send("Não foi possível adicionar log", req.query);
+        res.status(500).send("Não foi possível adicionar log");
     }
 }
