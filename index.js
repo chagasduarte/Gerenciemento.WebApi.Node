@@ -5,7 +5,7 @@ import despesaRoutes from './src/routes/despesaRoutes.js';
 import entradaRoutes from './src/routes/entradaRoutes.js';
 import parcelaRoutes from './src/routes/pacelaRoutes.js';
 import graficoRoutes from './src/routes/graficoRoutes.js';
-
+import logMensalRoutes from './src/routes/logMensalRoutes.js';
 const app = express();
 const PORT = 3000;
 
@@ -36,6 +36,7 @@ app.use('/Despesas', despesaRoutes);
 app.use('/Entradas', entradaRoutes);
 app.use('/Parcelas', parcelaRoutes);
 app.use('/Graficos', graficoRoutes);
+app.use('/Logs', logMensalRoutes);
 
 // Iniciar o servidor
 app.listen(PORT, () => {
