@@ -2,8 +2,9 @@ import pool from '../database/db.js';
 
 // Busca todos o meses
 export const getAllLogs = async (req, res) => {
+    const {ano} = req.params
     try {
-        const result = await pool.query('SELECT * FROM log_mensal');
+        const result = await pool.query('SELECT * FROM log_mensal where ano = $1', [ano]);
         res.json(result.rows);
     } catch (err) {
         console.error(err);
