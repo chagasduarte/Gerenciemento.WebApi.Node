@@ -20,7 +20,7 @@ export const postLog = async (req, res) => {
     }
 
     try {
-       const result = await pool.query(`INSERT INTO 
+        const result = await pool.query(`INSERT INTO 
                                         log_mensal (mes, abrevmes, nomemes, valorsaldo, percentgasto, ano)
                                         VALUES ($1, $2, $3, $4, $5, $6)
                                         ON CONFLICT (mes, ano) 
@@ -30,6 +30,8 @@ export const postLog = async (req, res) => {
                                             nomemes = EXCLUDED.nomemes,
                                             valorsaldo = EXCLUDED.valorsaldo,
                                             percentgasto = EXCLUDED.percentgasto;`, [mes, abrevmes, nomemes, valorsaldo, percentgasto, ano]);
+    
+        res.json(result.rows);
     }
     catch (err) {
         console.error(err);
