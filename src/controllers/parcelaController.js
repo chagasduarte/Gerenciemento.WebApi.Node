@@ -30,7 +30,21 @@ export const getAllParcelasByMes = async (req, res) => {
         res.status(500).send('Erro ao buscar Parcelas');
     }
 };
+// Buscar todas as Parcelas by Mes
+export const getAllParcelasByAno = async (req, res) => {
+    const {ano} = req.query;
+    let query = `SELECT  p.*, d."TipoDespesa" FROM "Parcelas" p
+                 INNER JOIN "Despesas" d ON d."Id" = p."DespesaId" 
+                 WHERE (EXTRACT(YEAR FROM "DataVencimento") = ${ano})`;
 
+    try {
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro ao buscar Parcelas');
+    }
+};
 
 // Buscar todas as Parcelas by Despesa
 export const getAllParcelasByDespesa = async (req, res) => {
