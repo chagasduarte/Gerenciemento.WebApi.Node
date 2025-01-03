@@ -17,9 +17,6 @@ export const getDespesasByAno = async (req, res) => {
     const { ano } = req.params;
     try {
         const result = await pool.query('SELECT * FROM "Despesas" WHERE EXTRACT(YEAR FROM "DataCompra") = $1', [ano]);
-        if (result.rows.length === 0) {
-            return res.status(404).send('Despesa não encontrada');
-        }
         res.json(result.rows);
     } catch (err) {
         console.error(err);
@@ -70,9 +67,6 @@ export const getDespesasParceladasTodas = async (req, res) => {
                                             ON p."DespesaId" = d."Id"
                                             AND EXTRACT(MONTH FROM p."DataVencimento") = $2
                                          WHERE EXTRACT(YEAR FROM p."DataVencimento") = $1`, [ano, mes]);
-        if (result.rows.length === 0) {
-            return res.status(404).send('Despesa não encontrada');
-        }
         res.json(result.rows);
     } catch (err) {
         console.error(err);
@@ -85,9 +79,6 @@ export const getDespesasAdicionais = async (req, res) => {
     const { ano } = req.query;
     try {
         const result = await pool.query('SELECT * FROM "Despesas" WHERE NOT "IsParcelada" and EXTRACT(YEAR FROM "DataCompra") = $1', [ano]);
-        if (result.rows.length === 0) {
-            return res.status(404).send('Despesa não encontrada');
-        }
         res.json(result.rows);
     } catch (err) {
         console.error(err);
@@ -101,9 +92,7 @@ export const getDespesasByMes = async (req, res) => {
     const { mes, ano } = req.query;
     try {
         const result = await pool.query('SELECT * FROM "Despesas" WHERE NOT "IsParcelada" and EXTRACT(YEAR FROM "DataCompra") = $1 and EXTRACT(MONTH FROM "DataCompra") = $2', [ano, mes]);
-        if (result.rows.length === 0) {
-            return res.status(404).send('Despesa não encontrada');
-        }
+
         res.json(result.rows);
     } catch (err) {
         console.error(err);
@@ -117,9 +106,6 @@ export const getDespesaById = async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query('SELECT * FROM "Despesas" WHERE "Id" = $1', [id]);
-        if (result.rows.length === 0) {
-            return res.status(404).send('Despesa não encontrada');
-        }
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err);
