@@ -7,7 +7,7 @@ import parcelaRoutes from './src/routes/pacelaRoutes.js';
 import graficoRoutes from './src/routes/graficoRoutes.js';
 import logMensalRoutes from './src/routes/logMensalRoutes.js';
 import objetivosRoutes from './src/routes/objetivoRoutes.js';
-
+import home from './pages/home.js';
 const app = express();
 const PORT = 3000;
 
@@ -46,7 +46,5 @@ app.listen(PORT, () => {
 });
 
 app.get('/', (req, res) => {
-    res.send(`
-        <h1>Faz é tempo que deu certo!!</h1>    
-    `);
+    res.send(home);
 });
