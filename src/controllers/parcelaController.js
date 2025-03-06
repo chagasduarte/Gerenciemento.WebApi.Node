@@ -123,9 +123,9 @@ export const deleteParcela = async (req, res) => {
 
 export const putParcela = async (req, res) => {
     const { id } = req.params;
-    const {IsPaga} = req.body;
+    const {IsPaga, DataVencimento} = req.body;
     try {
-        const result = await pool.query('UPDATE "Parcelas" SET "IsPaga" = $2 WHERE "Id" = $1', [id, IsPaga]);
+        const result = await pool.query('UPDATE "Parcelas" SET "IsPaga" = $2, "DataVencimento"  WHERE "Id" = $1', [id, IsPaga, DataVencimento]);
         if (!result) {
             return res.status(404).json({ message: 'Parcela não encontrada' });
         }
