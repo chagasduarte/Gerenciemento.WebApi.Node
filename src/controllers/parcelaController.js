@@ -123,9 +123,10 @@ export const deleteParcela = async (req, res) => {
 
 export const putParcela = async (req, res) => {
     const { id } = req.params;
-    const {IsPaga, DataVencimento, Valor} = req.body;
+    const {IsPaga, DataVencimento, Valor, Juros} = req.body;
     try {
-        const result = await pool.query('UPDATE "Parcelas" SET "IsPaga" = $2, "DataVencimento" = $3, "Valor" = $4  WHERE "Id" = $1', [id, IsPaga, DataVencimento, Valor]);
+        const isso = await pool.query('ALTER TABLE parcelas ADD COLUMN juros DECIMAL(10, 2) NOT NULL DEFAULT 0.00');
+        const result = await pool.query('UPDATE "Parcelas" SET "IsPaga" = $2, "DataVencimento" = $3, "Valor" = $4, "Juros" = $5  WHERE "Id" = $1', [id, IsPaga, DataVencimento, Valor, Juros]);
         if (!result) {
             return res.status(404).json({ message: 'Parcela não encontrada' });
         }
