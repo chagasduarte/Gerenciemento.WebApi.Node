@@ -14,8 +14,8 @@ export const getAllLogs = async (req, res) => {
 
 export const postLog = async (req, res) => {
     const {mes, abrevmes, nomemes, valorsaldo, percentgasto, ano} = req.body;
-
-    if(!mes || !abrevmes || !nomemes || !valorsaldo || !percentgasto || !ano){
+    console.log(req.body)
+    if(mes == undefined || !abrevmes || !nomemes || valorsaldo == undefined || percentgasto == undefined || ano == undefined){
       res.status(500).send("Todos os campos devem estar preenchidos");
     }
 
