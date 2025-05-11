@@ -7,6 +7,7 @@ import parcelaRoutes from './src/routes/pacelaRoutes.js';
 import graficoRoutes from './src/routes/graficoRoutes.js';
 import logMensalRoutes from './src/routes/logMensalRoutes.js';
 import objetivosRoutes from './src/routes/objetivoRoutes.js';
+import transacaoRouter from './src/routes/transacaoRouter.js';
 import home from './pages/home.js';
 const app = express();
 const PORT = 3000;
@@ -40,6 +41,8 @@ app.use('/Parcelas', parcelaRoutes);
 app.use('/Graficos', graficoRoutes);
 app.use('/Logs', logMensalRoutes);
 app.use('/Objetivos', objetivosRoutes);
+app.use('/Transacoes', transacaoRouter);
+
 // Iniciar o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
