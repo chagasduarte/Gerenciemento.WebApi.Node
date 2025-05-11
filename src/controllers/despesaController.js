@@ -14,7 +14,7 @@ export const getAllDespesas = async (req, res) => {
 
 // Buscar uma despesas pelo ano
 export const getDespesasByAno = async (req, res) => {
-    const { ano } = req.params;
+    const { ano } = req.query;
     try {
         const result = await pool.query('SELECT * FROM "Despesas" WHERE EXTRACT(YEAR FROM "DataCompra") = $1', [ano]);
         res.json(result.rows);
