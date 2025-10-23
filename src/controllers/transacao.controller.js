@@ -98,5 +98,14 @@ export const TransacaoController = {
     } catch (error) {
       res.status(404).json({ erro: error.message });
     }
+  },
+  async receber(req, res) {
+    try {
+      const id = req.params.id
+      await TransacaoBusiness.uptopago(id);
+      res.status(200).json("ok");
+    } catch (error) {
+      res.status(404).json({ erro: error.message });
+    }
   }
 };

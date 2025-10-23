@@ -181,5 +181,11 @@ export const TransacaoRepository = {
                 and descricao not like '%Parcela'`;
     const result = await pool.query(query, [mes, ano]);
     return result.rows;
+  },
+
+  async uptopago(id) {
+    const query = `UPDATE transacoes set status = 'pago' where id = $1`;
+    const result  = await pool.query(query, [id]);
+    return true;
   }
 };

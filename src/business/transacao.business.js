@@ -92,6 +92,10 @@ export const TransacaoBusiness = {
     }), {soma: 0})
 
     return { soma, agrupamento}
+  },
+  
+  async uptopago(id) {
+    return await TransacaoRepository.uptopago(id);
   }
 
 };
