@@ -4,10 +4,10 @@ import contaRoutes from './src/routes/contaRoutes.js';
 import despesaRoutes from './src/routes/despesaRoutes.js';
 import entradaRoutes from './src/routes/entradaRoutes.js';
 import parcelaRoutes from './src/routes/pacelaRoutes.js';
-import graficoRoutes from './src/routes/graficoRoutes.js';
+import dashboard from './src/routes/dashboard.routes.js';
 import logMensalRoutes from './src/routes/logMensalRoutes.js';
 import objetivosRoutes from './src/routes/objetivoRoutes.js';
-import transacaoRouter from './src/routes/transacaoRouter.js';
+import transacaoRouter from './src/routes/transacao.routes.js';
 import home from './pages/home.js';
 const app = express();
 const PORT = 3000;
@@ -38,10 +38,10 @@ app.use('/Contas', contaRoutes);
 app.use('/Despesas', despesaRoutes);
 app.use('/Entradas', entradaRoutes);
 app.use('/Parcelas', parcelaRoutes);
-app.use('/Graficos', graficoRoutes);
+app.use('/dashboard', dashboard);
 app.use('/Logs', logMensalRoutes);
 app.use('/Objetivos', objetivosRoutes);
-app.use('/Transacoes', transacaoRouter);
+app.use('/transacoes', transacaoRouter);
 
 // Iniciar o servidor
 app.listen(PORT, () => {
