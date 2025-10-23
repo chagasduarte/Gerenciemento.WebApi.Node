@@ -27,7 +27,23 @@ export const TransacaoController = {
       res.status(500).json({ erro: "Erro ao listar transações" });
     }
   },
+  async listarEntradas(req, res) {
+    try {
+      // Recebe filtros via query string
+      const { mes, ano } = req.query;
 
+      // Converte mês/ano para números
+      const mesNum = mes ? parseInt(mes) : null;
+      const anoNum = ano ? parseInt(ano) : null;
+
+      const transacoes = await TransacaoBusiness.listarEntradas(mesNum, anoNum);
+
+      res.json(transacoes);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ erro: "Erro ao listar transações" });
+    }
+  },
   async buscar(req, res) {
     try {
       const transacao = await TransacaoBusiness.buscarPorId(req.params.id);

@@ -37,7 +37,25 @@ export const TransacaoBusiness = {
       pagos
     }
   },
-  
+  async listarEntradas(mes, ano) {
+    const entradas_receber = await TransacaoRepository.listaTransacoes('entrada', 'pendente', mes, ano);
+    const entradas_recebidas = await TransacaoRepository.listaTransacoes('entrada', 'pago', mes, ano);
+    
+    const soma_receber = entradas_receber.reduce((acc, p) => ({
+      soma: acc.soma + parseFloat(p.valor)
+    }), { soma: 0  }).soma;
+
+    const soma_recebidos = entradas_recebidas.reduce((acc, p) => ({
+      soma: acc.soma + parseFloat(p.valor)
+    }), { soma: 0  }).soma;
+
+    return {
+      soma_receber,
+      soma_recebidos,
+      entradas_receber,
+      entradas_recebidas
+    }
+  },
   async somar(tipo, status, mes, ano) {
     return await TransacaoRepository.somaTransacoes(tipo,status, mes, ano);
   },

@@ -34,13 +34,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Usar as rotas
-app.use('/Contas', contaRoutes);
-app.use('/Despesas', despesaRoutes);
-app.use('/Entradas', entradaRoutes);
-app.use('/Parcelas', parcelaRoutes);
 app.use('/dashboard', dashboard);
-app.use('/Logs', logMensalRoutes);
-app.use('/Objetivos', objetivosRoutes);
 app.use('/transacoes', transacaoRouter);
 
 // Iniciar o servidor
