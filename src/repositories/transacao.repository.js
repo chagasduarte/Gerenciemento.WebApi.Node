@@ -187,5 +187,11 @@ export const TransacaoRepository = {
     const query = `UPDATE transacoes set status = 'pago' where id = $1`;
     const result  = await pool.query(query, [id]);
     return true;
+  },
+
+  async listaDespesa(descricao) {
+    const query = `SELECT * FROM transacoes WHERE descricao = $1`;
+    const result = await pool.query(query, [descricao]);
+    return result.rows;
   }
 };

@@ -96,6 +96,9 @@ export const TransacaoBusiness = {
   
   async uptopago(id) {
     return await TransacaoRepository.uptopago(id);
-  }
+  },
+   async listaDespesa(descricao) {
+    return await TransacaoRepository.listaDespesa(descricao);
+   }
 
 };

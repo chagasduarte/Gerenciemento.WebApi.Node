@@ -1,12 +1,6 @@
 import express from 'express';
 import cors from 'cors'; // Importar o cors
-import contaRoutes from './src/routes/contaRoutes.js';
-import despesaRoutes from './src/routes/despesaRoutes.js';
-import entradaRoutes from './src/routes/entradaRoutes.js';
-import parcelaRoutes from './src/routes/pacelaRoutes.js';
 import dashboard from './src/routes/dashboard.routes.js';
-import logMensalRoutes from './src/routes/logMensalRoutes.js';
-import objetivosRoutes from './src/routes/objetivoRoutes.js';
 import transacaoRouter from './src/routes/transacao.routes.js';
 import home from './pages/home.js';
 const app = express();

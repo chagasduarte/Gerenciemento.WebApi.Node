@@ -107,5 +107,14 @@ export const TransacaoController = {
     } catch (error) {
       res.status(404).json({ erro: error.message });
     }
+  },
+  async listaDespesa(req, res) {
+    try {
+      const {descricao} = req.query
+      const result = await TransacaoBusiness.listaDespesa(descricao);
+      res.json(result);
+    } catch (error) {
+      res.status(404).json({ erro: error.message });
+    }
   }
 };
