@@ -79,7 +79,7 @@ export const DashboardRepository = {
   async getAgrupamentoCategoria(ano) {
     const query = `SELECT
                         cast(categoria as integer) categoria,
-                        sum(valor)/12 AS media_mensal
+                        sum(valor) AS media_mensal
                     FROM transacoes
                     where EXTRACT(YEAR FROM data) = $1 and tipo = 'saida'
                     GROUP BY categoria
