@@ -190,7 +190,7 @@ export const TransacaoRepository = {
   },
 
   async listaDespesa(descricao) {
-    const query = `SELECT * FROM transacoes WHERE descricao = $1`;
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, criada_em FROM transacoes WHERE descricao = $1`;
     const result = await pool.query(query, [descricao]);
     return result.rows;
   }
