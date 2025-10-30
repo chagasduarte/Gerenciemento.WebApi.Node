@@ -1,4 +1,4 @@
-import { CartaoCreditoBusiness } from '../business/CartaoCreditoBusiness.js';
+import { CartaoCreditoBusiness } from '../business/cartaocredito.business.js';
 
 export const CartaoCreditoController = {
   async criar(req, res) {

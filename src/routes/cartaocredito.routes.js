@@ -1,5 +1,5 @@
 import express from 'express';
-import { CartaoCreditoController } from '../controllers/CartaoCreditoController.js';
+import { CartaoCreditoController } from '../controllers/cartaocredito.controller.js';
 
 const router = express.Router();
 

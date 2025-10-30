@@ -1,4 +1,4 @@
-import { CartaoCreditoRepository } from '../repositories/CartaoCreditoRepository.js';
+import { CartaoCreditoRepository } from '../repositories/transacao.credito.repository.js';
 
 export const CartaoCreditoBusiness = {
   async criar(dados) {

@@ -1,6 +1,6 @@
-import pool from "../config/db.js";
+import { pool } from "../config/database.js";
 
-export const CartaoTransacaoRepository = {
+export const CartaoCreditoRepository = {
   async criar(transacao) {
     const { 
       cartao_id, 
