@@ -1,5 +1,6 @@
 import { DashboardRepository } from "../repositories/dashboard.repository.js";
 import { TransacaoRepository } from "../repositories/transacao.repository.js";
+import { CartaoCreditoRepository } from "../repositories/transacao.credito.repository.js";
 
 export const DashboardBusiness = {
   async calcularResumoFinanceiro(mes, ano) {
@@ -16,6 +17,7 @@ export const DashboardBusiness = {
     const gastos_mensal_pendente = await TransacaoRepository.somaTransacoes('saida', 'pendente', mes, ano);
     const receita_mensal_pendente = await TransacaoRepository.somaTransacoes('entrada', 'pendente', mes, ano);
     const saldo_acumuldado = await DashboardRepository.getSaldoAcumulado(mes, ano)
+    const credito = await CartaoCreditoRepository.listarPorMes(1, mes, ano)
 
     return {
       saldo_atual,
@@ -23,7 +25,8 @@ export const DashboardBusiness = {
       receita_mensal,
       gastos_mensal_pendente,
       receita_mensal_pendente,
-      saldo_acumuldado
+      saldo_acumuldado,
+      saldo_cartao
     };
   },
 

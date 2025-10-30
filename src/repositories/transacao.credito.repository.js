@@ -3,14 +3,13 @@ import { pool } from "../config/database.js";
 export const CartaoCreditoRepository = {
   async criar(transacao) {
     const { 
-      cartao_id, 
       descricao, 
       valor, 
       data_compra, 
       data_fatura, 
-      status = 'pendente', 
-      parcelas_total = 1, 
-      parcela_atual = 1 
+      status, 
+      parcelas_total, 
+      parcela_atual
     } = transacao;
 
     const result = await pool.query(
