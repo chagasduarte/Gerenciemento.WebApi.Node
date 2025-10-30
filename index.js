@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors'; // Importar o cors
-import dashboard from './src/routes/dashboard.routes.js';
+import dashboardRouter from './src/routes/dashboard.routes.js';
 import transacaoRouter from './src/routes/transacao.routes.js';
+import cartaoRouter from './src/routes/cartaocredito.routes.js';
+
 import home from './pages/home.js';
 const app = express();
 const PORT = 3000;
@@ -28,8 +30,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Usar as rotas
-app.use('/dashboard', dashboard);
+app.use('/dashboard', dashboardRouter);
 app.use('/transacoes', transacaoRouter);
+app.use('/credito', cartaoRouter)
 
 // Iniciar o servidor
 app.listen(PORT, () => {
