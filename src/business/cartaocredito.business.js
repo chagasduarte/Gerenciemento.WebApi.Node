@@ -24,7 +24,9 @@ export const CartaoCreditoBusiness = {
   async listarTodos() {
     return await CartaoCreditoRepository.listarTodos();
   },
-
+  async listarPosMes(cartao_id, mes, ano) {
+    return await CartaoCreditoRepository.listarPorMes(cartao_id, mes, ano);
+  },
   async buscarPorId(id) {
     const cartao = await CartaoCreditoRepository.buscarPorId(id);
     if (!cartao) throw new Error('Cartão não encontrado.');

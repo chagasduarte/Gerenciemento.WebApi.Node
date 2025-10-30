@@ -18,7 +18,15 @@ export const CartaoCreditoController = {
       res.status(500).json({ erro: err.message });
     }
   },
-
+  async listarPosMes(req, res) {
+    try {
+      const { id, mes, ano } = req.params
+      const cartoes = await CartaoCreditoBusiness.listarPosMes(id, mes, ano);
+      res.json(cartoes);
+    } catch (err) {
+      res.status(500).json({ erro: err.message });
+    }
+  },
   async buscarPorId(req, res) {
     try {
       const cartao = await CartaoCreditoBusiness.buscarPorId(req.params.id);

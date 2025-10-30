@@ -4,11 +4,11 @@ import { CartaoCreditoController } from '../controllers/cartaocredito.controller
 const router = express.Router();
 
 // Criar novo cartão
+router.get('/pormes', CartaoCreditoController.listarPosMes);
 router.post('/', CartaoCreditoController.criar);
 
 // Listar todos os cartões
 router.get('/', CartaoCreditoController.listarTodos);
-
 // Buscar cartão por ID
 router.get('/:id', CartaoCreditoController.buscarPorId);
 
