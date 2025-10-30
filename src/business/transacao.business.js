@@ -2,7 +2,7 @@ import { TransacaoRepository } from "../repositories/transacao.repository.js";
 
 export const TransacaoBusiness = {
   async criar(transacao) {
-    if (!['entrada', 'saida'].includes(transacao.tipo)) {
+    if (!['entrada', 'saida', 'cartao'].includes(transacao.tipo)) {
       throw new Error("Tipo deve ser 'entrada' ou 'saida'.");
     }
     if (!transacao.descricao || transacao.valor == null) {
