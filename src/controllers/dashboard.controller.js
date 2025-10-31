@@ -4,7 +4,9 @@ export const DashboardController = {
   async getResumo(req, res) {
     try {
       const {mes, ano} = req.query;
-      const dados = await DashboardBusiness.calcularResumoFinanceiro(mes, ano);
+      const userid = req.usuarioId;
+
+      const dados = await DashboardBusiness.calcularResumoFinanceiro(mes, ano, userid);
       res.json(dados);
     } catch (err) {
       console.error(err);
@@ -14,8 +16,9 @@ export const DashboardController = {
 
   async getTransacoesFiltradas(req, res) {
     try {
-      const { tipo, status } = req.query; // ex: ?tipo=saida&status=pendente
-      const transacoes = await DashboardBusiness.filtrarTransacoes(tipo, status);
+      const { tipo, status } = req.query; // ex: ?tipo=saida&status=pendente 
+      const userid = req.usuarioId;
+      const transacoes = await DashboardBusiness.filtrarTransacoes(tipo, status, userid);
       res.json(transacoes);
     } catch (err) {
       console.error(err);
@@ -24,8 +27,10 @@ export const DashboardController = {
   },
   async buscaProjecao(req, res) {
     try {
-      const { ano } = req.query
-      const projecao = await DashboardBusiness.buscaProjecao(ano);
+      const { ano } = req.query;
+      const userid = req.usuarioId;
+
+      const projecao = await DashboardBusiness.buscaProjecao(ano, userid);
       res.json(projecao);
     } catch (err) {
       console.error(err);
@@ -34,8 +39,11 @@ export const DashboardController = {
   },
   async buscaAgrupamentoCategoria(req, res) {
     try {
-      const { ano } = req.query
-      const agrupamento = await DashboardBusiness.getAgrupamentoCategorias(ano);
+      const { ano } = req.query;
+      const userid = req.usuarioId;
+
+
+      const agrupamento = await DashboardBusiness.getAgrupamentoCategorias(ano, userid);
       res.json(agrupamento);
     } catch (err) {
       console.error(err);

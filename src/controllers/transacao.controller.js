@@ -3,7 +3,9 @@ import { TransacaoBusiness } from "../business/transacao.business.js";
 export const TransacaoController = {
   async criar(req, res) {
     try {
-      const transacao = await TransacaoBusiness.criar(req.body);
+      const userid = req.usuarioId;
+
+      const transacao = await TransacaoBusiness.criar(req.body, userid);
       res.status(201).json(transacao);
     } catch (error) {
       res.status(400).json({ erro: error.message });
@@ -14,12 +16,13 @@ export const TransacaoController = {
     try {
       // Recebe filtros via query string
       const { mes, ano } = req.query;
+      const userid = req.usuarioId;
 
       // Converte mês/ano para números
       const mesNum = mes ? parseInt(mes) : null;
       const anoNum = ano ? parseInt(ano) : null;
 
-      const transacoes = await TransacaoBusiness.listar(mesNum, anoNum);
+      const transacoes = await TransacaoBusiness.listar(mesNum, anoNum, userid);
 
       res.json(transacoes);
     } catch (err) {
@@ -31,12 +34,13 @@ export const TransacaoController = {
     try {
       // Recebe filtros via query string
       const { mes, ano } = req.query;
+      const userid = req.usuarioId;
 
       // Converte mês/ano para números
       const mesNum = mes ? parseInt(mes) : null;
       const anoNum = ano ? parseInt(ano) : null;
 
-      const transacoes = await TransacaoBusiness.listarEntradas(mesNum, anoNum);
+      const transacoes = await TransacaoBusiness.listarEntradas(mesNum, anoNum, userid);
 
       res.json(transacoes);
     } catch (err) {
@@ -46,7 +50,9 @@ export const TransacaoController = {
   },
   async buscar(req, res) {
     try {
-      const transacao = await TransacaoBusiness.buscarPorId(req.params.id);
+      const userid = req.usuarioId;
+
+      const transacao = await TransacaoBusiness.buscarPorId(req.params.id, userid);
       res.json(transacao);
     } catch (error) {
       res.status(404).json({ erro: error.message });
@@ -75,11 +81,12 @@ export const TransacaoController = {
     try {
       // Recebe filtros via query string
       const { mes, ano } = req.query;
+      const userid = req.usuarioId;
 
       // Converte mês/ano para números
       const mesNum = mes ? parseInt(mes) : null;
       const anoNum = ano ? parseInt(ano) : null;
-      const despesas = await TransacaoBusiness.listaDespesasParceladas(mesNum, anoNum);
+      const despesas = await TransacaoBusiness.listaDespesasParceladas(mesNum, anoNum, userid);
       res.json(despesas);
     } catch (error) {
       res.status(404).json({ erro: error.message });
@@ -89,11 +96,12 @@ export const TransacaoController = {
     try {
       // Recebe filtros via query string
       const { mes, ano } = req.query;
+      const userid = req.usuarioId;
 
       // Converte mês/ano para números
       const mesNum = mes ? parseInt(mes) : null;
       const anoNum = ano ? parseInt(ano) : null;
-      const agrupamentoTipo = await TransacaoBusiness.agrupamentoTipo(mesNum, anoNum);
+      const agrupamentoTipo = await TransacaoBusiness.agrupamentoTipo(mesNum, anoNum, userid);
       res.json(agrupamentoTipo);
     } catch (error) {
       res.status(404).json({ erro: error.message });

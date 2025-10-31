@@ -2,7 +2,7 @@ import { pool } from "../config/database.js";
 
 export const DashboardRepository = {
   // saldo atual (considera apenas transações pagas)
-  async getSaldoAtual(mes, ano) {
+  async getSaldoAtual(mes, ano, userid) {
     const query = `
       SELECT
         SUM(CASE 
@@ -16,11 +16,12 @@ export const DashboardRepository = {
           EXTRACT(YEAR FROM data) < $2
           OR (EXTRACT(YEAR FROM data) = $2 
               AND EXTRACT(MONTH FROM data) <= $1)
-        );`;
-    const { rows } = await pool.query(query, [mes, ano]);
+        )
+        AND userid = $3;`;
+    const { rows } = await pool.query(query, [mes, ano, userid]);
     return rows[0].saldo_atual || 0;
   },
-  async getSaldoAcumulado(mes, ano) {
+  async getSaldoAcumulado(mes, ano, userid) {
     const query = `
       SELECT
         SUM(CASE 
@@ -32,12 +33,13 @@ export const DashboardRepository = {
       WHERE 
           EXTRACT(YEAR FROM data) < $2
           OR (EXTRACT(YEAR FROM data) = $2 
-              AND EXTRACT(MONTH FROM data) <= $1);`;
-    const { rows } = await pool.query(query, [mes, ano]);
+              AND EXTRACT(MONTH FROM data) <= $1)
+          AND userid = $3;`;
+    const { rows } = await pool.query(query, [mes, ano, userid]);
     return rows[0].saldo_acumulado || 0;
   },
   // saldo projetado por mês (considera todas as transações, pagas ou pendentes)
-  async getProjecaoMensal(ano) {
+  async getProjecaoMensal(ano, userid) {
     const query = `
       SELECT
         DATE_TRUNC('month', data) AS mes_ano,
@@ -67,30 +69,30 @@ export const DashboardRepository = {
           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
         ) AS saldo_acumulado
       FROM transacoes
-      where EXTRACT(YEAR FROM data) = $1
+      where EXTRACT(YEAR FROM data) = $1 AND userid = $2;
       GROUP BY ano, mes_ano, mes
       ORDER BY ano, mes;
     `;
-    const { rows } = await pool.query(query, [ano]);
+    const { rows } = await pool.query(query, [ano, userid]);
     return rows;
   },
 
   // sobra acumulada por mês (considera apenas o que será recebido/pago)
-  async getAgrupamentoCategoria(ano) {
+  async getAgrupamentoCategoria(ano, userid) {
     const query = `SELECT
                         cast(categoria as integer) categoria,
                         sum(valor) AS media_mensal
                     FROM transacoes
-                    where EXTRACT(YEAR FROM data) = $1 and tipo = 'saida'
+                    where EXTRACT(YEAR FROM data) = $1 and tipo = 'saida' AND userid = $2
                     GROUP BY categoria
                     ORDER BY categoria;
                     `;
-    const { rows } = await pool.query(query, [ano]);
+    const { rows } = await pool.query(query, [ano, userid]);
     return rows;
   },
 
   // opcional: transações filtradas por tipo e status
-  async getTransacoes({ tipo = null, status = null }) {
+  async getTransacoes( tipo = null, status = null ) {
     let query = 'SELECT * FROM transacoes WHERE 1=1';
     const params = [];
     if (tipo) {

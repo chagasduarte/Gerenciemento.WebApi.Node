@@ -1,13 +1,13 @@
 import { pool } from "../config/database.js";
 
 export const TransacaoRepository = {
-  async criar(transacao) {
+  async criar(transacao, userid) {
     const { tipo, descricao, valor, categoria, data, status } = transacao;
     const result = await pool.query(
-      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status, userid)
+       VALUES ($1, $2, $3, $4, $5, $6, $7 )
        RETURNING *`,
-      [tipo, descricao, valor, categoria, data, status, new Date()]
+      [tipo, descricao, valor, categoria, data, status, userid]
     );
     return result.rows[0];
   },
@@ -34,9 +34,14 @@ export const TransacaoRepository = {
     return true;
   },
 
-  async listaTransacoes(tipo = null, status = null, mes = null, ano = null ) {
+  async listaTransacoes(tipo = null, status = null, mes = null, ano = null, userid ) {
     let query = 'SELECT * FROM transacoes WHERE 1=1';
     const params = [];
+    // Filtrar por usuário
+    if (userid) {
+      params.push(userid);
+      query += ` AND userid = $${params.length}`;
+    }
 
     // Filtrar por tipo
     if (tipo) {
@@ -68,9 +73,16 @@ export const TransacaoRepository = {
     const result = await pool.query(query, params);
     return result.rows;
   },
-  async somaTransacoes( tipo = null, status = null, mes = null, ano = null ) {
+
+  async somaTransacoes( tipo = null, status = null, mes = null, ano = null, userid ) {
     let query = 'SELECT sum(valor) as soma FROM transacoes WHERE 1=1';
     const params = [];
+
+     // Filtrar por usuário
+    if (userid) {
+      params.push(userid);
+      query += ` AND userid = $${params.length}`;
+    }
 
     // Filtrar por tipo
     if (tipo) {
@@ -98,7 +110,7 @@ export const TransacaoRepository = {
     const result = await pool.query(query, params);
     return result.rows[0].soma | 0;
   },
-  async listaDespesasParceladas(mes, ano){
+  async listaDespesasParceladas(mes, ano, userid){
     const query = `SELECT
                     descricao, 
                     SUM(valor) AS total_parcelado,
@@ -138,13 +150,14 @@ export const TransacaoRepository = {
                                               AND EXTRACT(YEAR FROM data) = $2
                                               AND descricao ILIKE '%- Parcela' 
                                               and tipo = 'saida')
+                    AND userid = $3
                   GROUP BY descricao
                   ORDER BY descricao;`
-    const result = await pool.query(query,[mes, ano]);
+    const result = await pool.query(query,[mes, ano, userid]);
     return result.rows;
   },
 
-  async agrupamentoTipo(mes, ano) {
+  async agrupamentoTipo(mes, ano, userid) {
     const query = `SELECT 
         sum(valor) as total_tipo, 
         cast(categoria as integer) as categoria
@@ -152,34 +165,37 @@ export const TransacaoRepository = {
       where t.tipo = 'saida'
         and EXTRACT(MONTH FROM data) = $1
         and EXTRACT(YEAR FROM data) = $2
+        AND userid = $3
         and t.status = 'pago'
       group by t.categoria
       order by t.categoria;`;
-    const result = await pool.query(query, [mes, ano]);
+    const result = await pool.query(query, [mes, ano, userid]);
     return result.rows;
   },
 
-  async listaParceladas(mes, ano) {
+  async listaParceladas(mes, ano, userid) {
     const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
                 and EXTRACT(MONTH FROM data) = $1
                 and EXTRACT(YEAR FROM data) = $2
-                and descricao like '%Parcela'`;
-    const result = await pool.query(query, [mes, ano]);
+                and descricao like '%Parcela'
+                AND userid = $3;`;
+    const result = await pool.query(query, [mes, ano, userid]);
     return result.rows;
   },
 
-  async listaAdicionais(mes, ano) {
+  async listaAdicionais(mes, ano, userid) {
     const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
                 and EXTRACT(MONTH FROM data) = $1
                 and EXTRACT(YEAR FROM data) = $2
-                and descricao not like '%Parcela'`;
-    const result = await pool.query(query, [mes, ano]);
+                and descricao not like '%Parcela'
+                AND userid = $3;`;
+    const result = await pool.query(query, [mes, ano, userid]);
     return result.rows;
   },
 

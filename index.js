@@ -31,7 +31,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Usar as rotas
-app.use(autentication)
+app.use(autentication);
 app.use('/dashboard', dashboardRouter);
 app.use('/transacoes', transacaoRouter);
 app.use('/auth', authRoutes)

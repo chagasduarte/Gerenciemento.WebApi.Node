@@ -2,7 +2,7 @@ import { DashboardRepository } from "../repositories/dashboard.repository.js";
 import { TransacaoRepository } from "../repositories/transacao.repository.js";
 
 export const DashboardBusiness = {
-  async calcularResumoFinanceiro(mes, ano) {
+  async calcularResumoFinanceiro(mes, ano, userid) {
 
     const dataAtual = new Date();
 
@@ -10,12 +10,12 @@ export const DashboardBusiness = {
     const mesAtual = dataAtual.getMonth() + 1; // soma 1 para ficar de 1 a 12
     const anoAtual = dataAtual.getFullYear();
 
-    const saldo_atual = await DashboardRepository.getSaldoAtual(mesAtual, anoAtual);
-    const gastos_mensal = await TransacaoRepository.somaTransacoes('saida', '', mes, ano);
-    const receita_mensal = await TransacaoRepository.somaTransacoes('entrada', '', mes, ano);
-    const gastos_mensal_pendente = await TransacaoRepository.somaTransacoes('saida', 'pendente', mes, ano);
-    const receita_mensal_pendente = await TransacaoRepository.somaTransacoes('entrada', 'pendente', mes, ano);
-    const saldo_acumuldado = await DashboardRepository.getSaldoAcumulado(mes, ano)
+    const saldo_atual = await DashboardRepository.getSaldoAtual(mesAtual, anoAtual, userid);
+    const gastos_mensal = await TransacaoRepository.somaTransacoes('saida', '', mes, ano, userid);
+    const receita_mensal = await TransacaoRepository.somaTransacoes('entrada', '', mes, ano, userid);
+    const gastos_mensal_pendente = await TransacaoRepository.somaTransacoes('saida', 'pendente', mes, ano, userid);
+    const receita_mensal_pendente = await TransacaoRepository.somaTransacoes('entrada', 'pendente', mes, ano, userid);
+    const saldo_acumuldado = await DashboardRepository.getSaldoAcumulado(mes, ano, userid);
 
     return {
       saldo_atual,
