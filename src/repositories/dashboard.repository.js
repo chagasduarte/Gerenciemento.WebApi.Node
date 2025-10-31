@@ -31,9 +31,9 @@ export const DashboardRepository = {
             END) AS saldo_acumulado
       FROM transacoes
       WHERE 
-          EXTRACT(YEAR FROM data) < $2
+          (EXTRACT(YEAR FROM data) < $2
           OR (EXTRACT(YEAR FROM data) = $2 
-              AND EXTRACT(MONTH FROM data) <= $1)
+              AND EXTRACT(MONTH FROM data) <= $1))
           AND userid = $3;`;
     const { rows } = await pool.query(query, [mes, ano, userid]);
     return rows[0].saldo_acumulado || 0;
