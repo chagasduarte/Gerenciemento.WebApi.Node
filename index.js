@@ -3,6 +3,7 @@ import cors from 'cors'; // Importar o cors
 import dashboardRouter from './src/routes/dashboard.routes.js';
 import transacaoRouter from './src/routes/transacao.routes.js';
 import authRoutes from './src/routes/auth.routes.js';
+import { autentication } from './src/middlewares/autentication.js';
 
 import home from './pages/home.js';
 const app = express();
@@ -30,6 +31,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Usar as rotas
+app.use(autentication)
 app.use('/dashboard', dashboardRouter);
 app.use('/transacoes', transacaoRouter);
 app.use('/auth', authRoutes)
