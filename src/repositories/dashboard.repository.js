@@ -69,7 +69,7 @@ export const DashboardRepository = {
           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
         ) AS saldo_acumulado
       FROM transacoes
-      where EXTRACT(YEAR FROM data) = $1 AND userid = $2;
+      where EXTRACT(YEAR FROM data) = $1 AND userid = $2
       GROUP BY ano, mes_ano, mes
       ORDER BY ano, mes;
     `;
