@@ -4,7 +4,7 @@ export const TransacaoRepository = {
   async criar(transacao) {
     const { tipo, descricao, valor, categoria, data, status } = transacao;
     const result = await pool.query(
-      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status, criada_em)
+      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
       [tipo, descricao, valor, categoria, data, status, new Date()]
@@ -160,7 +160,7 @@ export const TransacaoRepository = {
   },
 
   async listaParceladas(mes, ano) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, criada_em
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
@@ -172,7 +172,7 @@ export const TransacaoRepository = {
   },
 
   async listaAdicionais(mes, ano) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, criada_em
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
@@ -190,7 +190,7 @@ export const TransacaoRepository = {
   },
 
   async listaDespesa(descricao) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, criada_em FROM transacoes t WHERE descricao = $1`;
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status FROM transacoes t WHERE descricao = $1`;
     const result = await pool.query(query, [descricao]);
     return result.rows;
   }
