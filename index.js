@@ -32,10 +32,8 @@ app.use(express.json());
 
 // Usar as rotas
 app.use('/auth', authRoutes);
-
-app.use(autentication);
-app.use('/dashboard', dashboardRouter);
-app.use('/transacoes', transacaoRouter);
+app.use('/dashboard', autentication, dashboardRouter);
+app.use('/transacoes', autentication, transacaoRouter);
 
 // Iniciar o servidor
 app.listen(PORT, () => {
