@@ -31,8 +31,8 @@ export const DashboardBusiness = {
   async filtrarTransacoes(tipo, status) {
     return await DashboardRepository.getTransacoes({ tipo, status });
   },
-  async buscaProjecao(ano){
-    return await DashboardRepository.getProjecaoMensal(ano);
+  async buscaProjecao(ano, userid){
+    return await DashboardRepository.getProjecaoMensal(ano, userid);
   },
   async getAgrupamentoCategorias(ano, userid) {
     return await DashboardRepository.getAgrupamentoCategoria(ano, userid);
