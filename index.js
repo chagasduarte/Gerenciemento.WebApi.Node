@@ -31,10 +31,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Usar as rotas
+app.use('/auth', authRoutes);
+
 app.use(autentication);
 app.use('/dashboard', dashboardRouter);
 app.use('/transacoes', transacaoRouter);
-app.use('/auth', authRoutes)
 
 // Iniciar o servidor
 app.listen(PORT, () => {
