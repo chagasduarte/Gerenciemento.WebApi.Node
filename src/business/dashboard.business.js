@@ -34,7 +34,7 @@ export const DashboardBusiness = {
   async buscaProjecao(ano){
     return await DashboardRepository.getProjecaoMensal(ano);
   },
-  async getAgrupamentoCategorias(ano) {
-    return await DashboardRepository.getAgrupamentoCategoria(ano);
+  async getAgrupamentoCategorias(ano, userid) {
+    return await DashboardRepository.getAgrupamentoCategoria(ano, userid);
   }
 };
