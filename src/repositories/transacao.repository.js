@@ -212,19 +212,23 @@ export const TransacaoRepository = {
   },
 
   async linhaTemporal(ano, userid) {
-    const query = `select count(*) total_parcelas, 
-                       max(data) data_fim, 
-                       min(data) data_inicio, 
-                       descricao 
-                    from transacoes t 	
-                    where extract (year from data) = $1
-                      and t.userid = $2
-                      and t.descricao like '%- Parcela'
-                    group by descricao
-                    order by data_fim, data_inicio desc;`;
+    const query = `SELECT 
+                      COUNT(*) AS total_parcelas, 
+                      MAX(data) AS data_fim, 
+                      MIN(data) AS data_inicio,
+                      descricao 
+                  FROM transacoes t 	
+                  WHERE EXTRACT(YEAR FROM data) = $1
+                    AND t.userid = $2
+                    AND t.descricao LIKE '%- Parcela'
+                  GROUP BY descricao
+                  ORDER BY 
+                      EXTRACT(YEAR FROM MIN(data)) ASC,   
+                      EXTRACT(MONTH FROM MIN(data)) ASC,  
+                      total_parcelas ASC,                 
+                      MAX(data) ASC;`;
     const result = await pool.query(query, [ano, userid]);
     console.log(ano, userid)
     return result.rows;
-
   }
 };
