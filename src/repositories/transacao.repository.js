@@ -220,7 +220,8 @@ export const TransacaoRepository = {
                     where extract (year from data) = $1
                       and t.userid = $2
                       and t.descricao like '%- Parcela'
-                    group by descricao;`;
+                    group by descricao
+                    order by data_fim desc;`;
     const result = await pool.query(query, [ano, userid]);
     console.log(ano, userid)
     return result.rows;
