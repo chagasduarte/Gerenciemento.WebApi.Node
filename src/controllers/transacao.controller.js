@@ -124,5 +124,19 @@ export const TransacaoController = {
     } catch (error) {
       res.status(404).json({ erro: error.message });
     }
+  },
+  async linhaTemporal(req, res) {
+
+    try {
+      const { ano } = req.query;
+      const userid = req.usuarioId;
+
+      const result = await TransacaoBusiness.linhaTemporal(ano, userid);
+      res.json(result);
+    } catch (error) {
+      res.status(404).json({ erro: error.message });
+    }
+
+    
   }
 };

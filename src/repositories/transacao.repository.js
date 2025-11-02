@@ -209,5 +209,21 @@ export const TransacaoRepository = {
     const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status FROM transacoes t WHERE descricao = $1`;
     const result = await pool.query(query, [descricao]);
     return result.rows;
+  },
+
+  async linhaTemporal(ano, userid) {
+    const query = `select count(*) total_parcelas, 
+                       max(data) data_fim, 
+                       min(data) data_inicio, 
+                       descricao 
+                    from transacoes t 	
+                    where extract (year from data) = $1
+                      and t.userid = $2
+                      and t.descricao like '%- Parcela'
+                    group by descricao;`;
+    const result = await pool.query(query, [ano, userid]);
+    console.log(ano, userid)
+    return result.rows;
+
   }
 };

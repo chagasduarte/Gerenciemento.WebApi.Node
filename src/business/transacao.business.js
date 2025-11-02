@@ -100,6 +100,10 @@ export const TransacaoBusiness = {
 
   async listaDespesa(descricao) {
     return await TransacaoRepository.listaDespesa(descricao);
+  },
+
+  async linhaTemporal(ano, userid) {
+    return await TransacaoRepository.linhaTemporal(ano, userid);
   }
 
 };
