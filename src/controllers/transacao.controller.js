@@ -136,7 +136,17 @@ export const TransacaoController = {
     } catch (error) {
       res.status(404).json({ erro: error.message });
     }
+  },
 
-    
+  async buscaPorDia(req, res) {
+
+    try {
+      const { dia, mes, ano } = req.query;
+      const userid = req.usuarioId;
+      const result = await TransacaoBusiness.buscaPorDia(dia, mes, ano, userid);
+      res.json(result);
+    } catch (error) {
+      res.status(404).json({ erro: error.message });
+    }
   }
 };

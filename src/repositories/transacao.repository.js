@@ -230,5 +230,18 @@ export const TransacaoRepository = {
     const result = await pool.query(query, [ano, userid]);
     console.log(ano, userid)
     return result.rows;
+  },
+
+  async buscaPorDia(dia, mes, ano, userid) {
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
+                    FROM public.transacoes t
+                    where t.tipo = 'saida'
+                      and t.status = 'pendente'
+                      and EXTRACT(DAY FROM data) = $1
+                      and EXTRACT(MONTH FROM data) = $2
+                      and EXTRACT(YEAR FROM data) = $3
+                      AND userid = $4;`;
+    const result = await pool.query(query, [dia, mes, ano, userid]);
+    return result.rows;
   }
 };

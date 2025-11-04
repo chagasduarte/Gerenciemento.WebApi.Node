@@ -104,6 +104,12 @@ export const TransacaoBusiness = {
 
   async linhaTemporal(ano, userid) {
     return await TransacaoRepository.linhaTemporal(ano, userid);
+  },
+  async buscaPorDia(dia, mes, ano, userid) {
+    const result = await TransacaoRepository.buscaPorDia(dia, mes, ano, userid);
+    const soma = result.reduce((acc, p) => ({
+       soma: acc.soma + parseFloat(p.valor)
+    }), {soma: 0})
+    return { soma, result}
   }
-
 };
