@@ -167,6 +167,7 @@ export const TransacaoRepository = {
         and EXTRACT(YEAR FROM data) = $2
         AND userid = $3
         and t.status = 'pago'
+        and t.categoria is not null
       group by t.categoria
       order by t.categoria;`;
     const result = await pool.query(query, [mes, ano, userid]);
