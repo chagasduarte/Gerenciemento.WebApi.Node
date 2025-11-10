@@ -2,12 +2,12 @@ import { pool } from "../config/database.js";
 
 export const TransacaoRepository = {
   async criar(transacao, userid) {
-    const { tipo, descricao, valor, categoria, data, status } = transacao;
+    const { tipo, descricao, valor, categoria, data, status, ispaycart } = transacao;
     const result = await pool.query(
-      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status, userid)
-       VALUES ($1, $2, $3, $4, $5, $6, $7 )
+      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status, userid, ispaycart)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8 )
        RETURNING *`,
-      [tipo, descricao, valor, categoria, data, status, userid]
+      [tipo, descricao, valor, categoria, data, status, userid, ispaycart]
     );
     return result.rows[0];
   },
@@ -241,6 +241,7 @@ export const TransacaoRepository = {
                       and EXTRACT(DAY FROM data) = $1
                       and EXTRACT(MONTH FROM data) = $2
                       and EXTRACT(YEAR FROM data) = $3
+                      and ispaycart = true
                       AND userid = $4;`;
     const result = await pool.query(query, [dia, mes, ano, userid]);
     return result.rows;

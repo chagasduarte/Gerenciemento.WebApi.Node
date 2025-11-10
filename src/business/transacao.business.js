@@ -99,7 +99,13 @@ export const TransacaoBusiness = {
   },
 
   async listaDespesa(descricao) {
-    return await TransacaoRepository.listaDespesa(descricao);
+    const despesa = await TransacaoRepository.listaDespesa(descricao);
+
+    const soma = despesa.reduce((acc, p) => ({
+      soma: acc.soma + parseFloat(p.valor)
+    }), { soma: 0  }).soma;
+
+    return {soma, despesa}
   },
 
   async linhaTemporal(ano, userid) {
