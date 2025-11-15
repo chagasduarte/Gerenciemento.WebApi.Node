@@ -11,7 +11,16 @@ export const TransacaoController = {
       res.status(400).json({ erro: error.message });
     }
   },
+  async criarParcelada(req, res) {
+    try {
+      const userid = req.usuarioId;
 
+      const transacao = await TransacaoBusiness.criarParcelada(req.body, userid);
+      res.status(201).json(transacao);
+    } catch (error) {
+      res.status(400).json({ erro: error.message });
+    }
+  },
   async listar(req, res) {
     try {
       // Recebe filtros via query string

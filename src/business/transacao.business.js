@@ -10,6 +10,69 @@ export const TransacaoBusiness = {
     }
     return await TransacaoRepository.criar(transacao, userid);
   },
+  
+  async criarParcelada(payload, userId) {
+    try {
+      // --- Validações básicas ---
+      if (!payload?.parcelado || !payload?.cartao) {
+        throw new Error("Transação não é parcelada ou não é de cartão.");
+      }
+
+      if (!payload.parcelas?.QtdParcelas || !payload.parcelas?.Valor) {
+        throw new Error("Informações de parcelamento inválidas.");
+      }
+
+      const qtdParcelas = Number(payload.parcelas.QtdParcelas);
+      const valorParcelaInformado = Number(payload.parcelas.Valor);
+
+      if (qtdParcelas <= 0) {
+        throw new Error("Quantidade de parcelas inválida.");
+      }
+
+      // --- Cálculo do valor por parcela ---
+      const valorCalculado = Number(payload.valor) / qtdParcelas;
+
+      // Confere se o valor da parcela bate (ajuda a evitar manipulação)
+      if (valorCalculado != valorParcelaInformado) {
+        throw new Error("Valor das parcelas não confere com o valor total.");
+      }
+
+      // --- Data inicial da compra ---
+      const dataCompra = new Date(payload.dataCompra);
+
+      // --- Criar cada parcela ---
+      const parcelasCriadas = [];
+
+      for (let i = 0; i < qtdParcelas; i++) {
+
+        // Data da parcela = mês da compra + i
+        let dataParcela = new Date(dataCompra);
+        dataParcela.setMonth(dataCompra.getMonth() + i);
+
+        const parcela = {
+          tipo: "saida",
+          descricao: `${payload.descricao} - Parcela`,
+          valor: valorParcelaInformado,
+          categoria: payload.categoria,
+          data: dataParcela,
+          status: "pendente",
+          ispaycart: true,
+          userId
+        };
+
+        // Envia para o Repository
+        const criada = await TransacaoRepository.criar(parcela);
+        parcelasCriadas.push(criada);
+      }
+
+      return parcelasCriadas;
+    }
+    catch (ex) {
+      console.error("Erro ao criar transação parcelada:", ex);
+      throw ex;
+    }
+  }
+  ,
 
   async listar(mes, ano, userid) {
     const parceladas = await TransacaoRepository.listaParceladas(mes, ano, userid);
