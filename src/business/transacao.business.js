@@ -57,7 +57,7 @@ export const TransacaoBusiness = {
           data: dataParcela,
           status: "pendente",
           ispaycart: true,
-          userId
+          userId: userId
         };
 
         // Envia para o Repository
