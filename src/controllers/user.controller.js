@@ -37,7 +37,8 @@ export const UserController = {
         throw new Error("Você não pode acessar essa informação");
       }
       const resultado = await UserBusiness.getAvatar(userid);
-      res.status(200).json(resultado);
+      const response = {avatarUrl: `${process.env.BASE_URL}/uploads/${resultado.avatar}`}
+      res.status(200).json(response);
     } catch (error) {
       res.status(401).json({ erro: error.message });
     } 
