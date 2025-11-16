@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 
 // Cria pasta 'uploads' se não existir
-const uploadsDir = path.join(__dirname, '..', 'uploads');
+const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }

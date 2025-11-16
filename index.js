@@ -39,7 +39,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'src', 'uploads')));
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // Usar as rotas
 app.use('/auth', authRoutes);
