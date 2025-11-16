@@ -32,13 +32,19 @@ export const UserController = {
   },
   async getAvatar(req, res) {
     try {
-      const userid = req.usuarioId;
-      if (userid != req.params.id) {
-        throw new Error("Você não pode acessar essa informação");
+      if(req.usuarioId == undefined) {
+        const response = {avatarUrl: `${process.env.BASE_URL}/uploads/noImage.png`}
+        res.status(200).json(response);
       }
-      const resultado = await UserBusiness.getAvatar(userid);
-      const response = {avatarUrl: `${process.env.BASE_URL}/uploads/${resultado.avatar}`}
-      res.status(200).json(response);
+      else {
+        const userid = req.usuarioId;
+        if (userid != req.params.id) {
+          throw new Error("Você não pode acessar essa informação");
+        }
+        const resultado = await UserBusiness.getAvatar(userid);
+        const response = {avatarUrl: `${process.env.BASE_URL}/uploads/${resultado.avatar}`}
+        res.status(200).json(response);
+      }
     } catch (error) {
       res.status(401).json({ erro: error.message });
     } 
