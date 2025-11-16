@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors'; // Importar o cors
 import dashboardRouter from './src/routes/dashboard.routes.js';
 import transacaoRouter from './src/routes/transacao.routes.js';
+import userRouter from './src/routes/user.routes.js';
 import authRoutes from './src/routes/auth.routes.js';
 import { autentication } from './src/middlewares/autentication.js';
 
@@ -34,6 +35,7 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/dashboard', autentication, dashboardRouter);
 app.use('/transacoes', autentication, transacaoRouter);
+app.use('/user', userRouter);
 
 // Iniciar o servidor
 app.listen(PORT, () => {

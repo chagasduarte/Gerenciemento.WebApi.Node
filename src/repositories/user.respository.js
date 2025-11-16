@@ -7,5 +7,11 @@ export const UsuarioRepository = {
       [user]
     );
     return result.rows[0];
+  },
+  async criar(user) {
+    const {nome, senha, avatar } = user;
+    const query = `INSERT INTO usuarios (nome, senha_hash, avatar) values ($1, $2, $3)`;
+    const result = await pool.query(query, [nome, senha, avatar]);
+    return result.rows[0];
   }
 };
