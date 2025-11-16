@@ -7,6 +7,15 @@ import authRoutes from './src/routes/auth.routes.js';
 import { autentication } from './src/middlewares/autentication.js';
 
 import home from './pages/home.js';
+
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Correção do __dirname no ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 const app = express();
 const PORT = 3000;
 
@@ -30,6 +39,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'src', 'uploads')));
 
 // Usar as rotas
 app.use('/auth', authRoutes);

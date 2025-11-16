@@ -19,6 +19,24 @@ export const UserBusiness = {
     };
 
     // salvar
-    return await UsuarioRepository.criar(usuarioParaSalvar);
+    const user =  await UsuarioRepository.criar(usuarioParaSalvar);
+
+    await this.uploadAvatar(user.id, usuario.avatar);
+    return user;
+  },
+
+  async uploadAvatar(userid, file) {
+    if(!file) throw new Error("Arquivo não recebido");
+
+    const filePath = `uploads/${file.filename}`;
+    const userUpdated = await UsuarioRepository.update(userid, filePath);
+
+    if(!userUpdated) throw new Error("Usuário não encontrado");
+
+  },
+  async getAvatar(userid) {
+    const avatar = await UsuarioRepository.buscaAvatar(userid);
+      console.log(avatar)
+    return avatar;
   }
 }
