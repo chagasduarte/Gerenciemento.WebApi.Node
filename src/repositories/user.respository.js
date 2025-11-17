@@ -9,13 +9,14 @@ export const UsuarioRepository = {
     return result.rows[0];
   },
   async criar(user) {
-    const {nome, senha, avatar } = user;
-    const query = `INSERT INTO usuarios (nome, senha_hash, avatar) values ($1, $2, $3)`;
-    const result = await pool.query(query, [nome, senha, avatar]);
+    const {nome, senha } = user;
+    const query = `INSERT INTO usuarios (nome, senha_hash) values ($1, $2)  RETURNING *`;
+    const result = await pool.query(query, [nome, senha]);
     return result.rows[0];
   },
+
   async update(userid, avatar) {
-    const query = `UPDATE usuarios set avatar = $1 where id = $2`
+    const query = `UPDATE usuarios set avatar = $1 where id = $2  RETURNING *`
     return await pool.query(query, [avatar, userid]);
   },
   async buscaAvatar(userid) {
@@ -23,7 +24,6 @@ export const UsuarioRepository = {
       `SELECT avatar FROM usuarios WHERE id = $1 LIMIT 1`,
       [userid]
     );
-    console.log(userid);
     return result.rows[0];
   },
 };
