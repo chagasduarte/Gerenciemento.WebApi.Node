@@ -61,7 +61,7 @@ export const TransacaoBusiness = {
         };
 
         // Envia para o Repository
-        const criada = await TransacaoRepository.criar(parcela);
+        const criada = await TransacaoRepository.criar(parcela, userId);
         parcelasCriadas.push(criada);
       }
 
