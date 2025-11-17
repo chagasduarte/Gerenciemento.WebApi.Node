@@ -16,6 +16,7 @@ export const DashboardBusiness = {
     const gastos_mensal_pendente = await TransacaoRepository.somaTransacoes('saida', 'pendente', mes, ano, userid);
     const receita_mensal_pendente = await TransacaoRepository.somaTransacoes('entrada', 'pendente', mes, ano, userid);
     const saldo_acumuldado = await DashboardRepository.getSaldoAcumulado(mes, ano, userid);
+    const gastos_cartao = await TransacaoRepository.somaTransacoes('saida', 'pendente', mes, ano, userid, true);
 
     return {
       saldo_atual,
@@ -23,7 +24,8 @@ export const DashboardBusiness = {
       receita_mensal,
       gastos_mensal_pendente,
       receita_mensal_pendente,
-      saldo_acumuldado
+      saldo_acumuldado,
+      gastos_cartao
     };
   },
 

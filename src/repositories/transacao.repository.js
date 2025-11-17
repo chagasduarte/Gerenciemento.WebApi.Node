@@ -74,7 +74,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async somaTransacoes( tipo = null, status = null, mes = null, ano = null, userid ) {
+  async somaTransacoes( tipo = null, status = null, mes = null, ano = null, userid, ispaycart = null ) {
     let query = 'SELECT sum(valor) as soma FROM transacoes WHERE 1=1';
     const params = [];
 
@@ -82,6 +82,10 @@ export const TransacaoRepository = {
     if (userid) {
       params.push(userid);
       query += ` AND userid = $${params.length}`;
+    }
+    if (ispaycart) {
+      params.push(ispaycart);
+      query += ` AND ispaycart = $${params.length}`;
     }
 
     // Filtrar por tipo
@@ -110,6 +114,7 @@ export const TransacaoRepository = {
     const result = await pool.query(query, params);
     return result.rows[0].soma | 0;
   },
+
   async listaDespesasParceladas(mes, ano, userid){
     const query = `SELECT
                     descricao, 
