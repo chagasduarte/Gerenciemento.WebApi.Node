@@ -175,7 +175,7 @@ export const TransacaoRepository = {
   },
 
   async listaParceladas(mes, ano, userid) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
@@ -188,7 +188,7 @@ export const TransacaoRepository = {
   },
 
   async listaAdicionais(mes, ano, userid) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
