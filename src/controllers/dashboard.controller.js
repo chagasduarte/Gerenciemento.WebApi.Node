@@ -10,7 +10,7 @@ export const DashboardController = {
       if(dados.hasSome)
         res.json(dados);
       else 
-        res.status(45).json({ error: "Usuário ainda não preencheu nenhuma informação", dados })
+        res.status(405).json({ error: "Usuário ainda não preencheu nenhuma informação", dados })
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Erro ao obter dados do dashboard" });
