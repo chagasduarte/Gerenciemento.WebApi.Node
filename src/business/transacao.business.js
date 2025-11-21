@@ -71,9 +71,113 @@ export const TransacaoBusiness = {
       console.error("Erro ao criar transação parcelada:", ex);
       throw ex;
     }
-  }
-  ,
+  },
+  async saveNewuser(payload, userId) {
+    try {
+      const { entradas, saidas } = payload;
 
+      if (!entradas || !Array.isArray(entradas) || entradas.length === 0) {
+        throw new Error("É necessário pelo menos uma ENTRADA fixa.");
+      }
+
+      if (!saidas || !Array.isArray(saidas) || saidas.length === 0) {
+        throw new Error("É necessário pelo menos uma SAÍDA fixa.");
+      }
+
+      // Quantidade de meses a gerar
+      const monthsToGenerate = 12;
+
+      // Data de referência para geração
+      const hoje = new Date();
+      const startYear = hoje.getFullYear();
+      const startMonth = hoje.getMonth(); // 0 = janeiro
+
+      const todasTransacoes = [];
+
+      // Função utilitária igual ao business anterior
+      const lastDayOfMonth = (year, monthZero) => {
+        return new Date(year, monthZero + 1, 0).getDate();
+      };
+
+      const safeDay = (year, monthZero, day) => {
+        const last = lastDayOfMonth(year, monthZero);
+        return Math.min(Math.max(1, day), last);
+      };
+
+      // -----------------------------
+      // CRIA TODAS AS TRANSAÇÕES
+      // -----------------------------
+      for (let m = 0; m < monthsToGenerate; m++) {
+
+        const year = startYear + Math.floor((startMonth + m) / 12);
+        const month = (startMonth + m) % 12;
+
+        // ========= ENTRADAS =========
+        for (const entrada of entradas) {
+
+          const valorEntrada = Number(entrada.value ?? entrada.valor);
+          const dia = safeDay(year, month, Number(entrada.day_of_month));
+
+          const data = new Date(year, month, dia);
+
+          const transacao = {
+            tipo: "entrada",
+            descricao: entrada.description || entrada.descricao || "Entrada fixa",
+            valor: Math.abs(valorEntrada),    // garante valor positivo
+            categoria: null,                   // opcional
+            data: data,
+            status: "pendente",
+            ispaycart: false,
+            userId: userId
+          };
+
+          todasTransacoes.push(transacao);
+        }
+
+        // ========= SAÍDAS =========
+        for (const saida of saidas) {
+
+          const valorSaida = Number(saida.value ?? saida.valor);
+          const dia = safeDay(year, month, Number(saida.day_of_month));
+
+          const data = new Date(year, month, dia);
+
+          const transacao = {
+            tipo: "saida",
+            descricao: saida.description || saida.descricao || "Despesa fixa",
+            valor: -Math.abs(valorSaida),      // saída sempre negativa
+            categoria: saida.category ?? saida.categoria ?? null,
+            data: data,
+            status: "pendente",
+            ispaycart: false,
+            userId: userId
+          };
+
+          todasTransacoes.push(transacao);
+        }
+      }
+
+      // -----------------------------
+      // SALVA TODAS AS TRANSACOES
+      // -----------------------------
+      const criadas = [];
+
+      for (const tr of todasTransacoes) {
+        const criada = await TransacaoRepository.criar(tr, userId);
+        criadas.push(criada);
+      }
+
+      return {
+        ok: true,
+        quantidadeCriada: criadas.length,
+        transacoes: criadas
+      };
+
+    } catch (err) {
+      console.error("Erro ao criar transações iniciais do usuário:", err);
+      throw err;
+    }
+  },
   async listar(mes, ano, userid) {
     const parceladas = await TransacaoRepository.listaParceladas(mes, ano, userid);
     const adicionais = await TransacaoRepository.listaAdicionais(mes, ano, userid);
