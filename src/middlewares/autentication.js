@@ -20,7 +20,7 @@ export function autentication(req, res, next) {
     if(user)
       req.usuarioId = decoded.id;
     else 
-      throw new Error("Usuário não encontrado")
+      res.status(404).json({error: 'Usuário não encontrado'})
     next();
   } catch (err) {
     console.error('Erro ao verificar token:', err.message);
