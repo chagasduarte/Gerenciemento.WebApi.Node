@@ -26,4 +26,11 @@ export const UsuarioRepository = {
     );
     return result.rows[0];
   },
+  async buscaPorId(userid) {
+    const result = await pool.query(
+      `SELECT * FROM usuarios WHERE id = $1 LIMIT 1`,
+      [userid]
+    );
+    return result.rows[0];
+  }
 };

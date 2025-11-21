@@ -46,5 +46,8 @@ export const UserBusiness = {
   async getAvatar(userid) {
     const avatar = await UsuarioRepository.buscaAvatar(userid);
     return avatar;
+  },
+  async buscarPorId(userid) {
+    return await UsuarioRepository.buscaPorId(userid);
   }
 }
