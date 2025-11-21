@@ -145,7 +145,7 @@ export const TransacaoBusiness = {
           const transacao = {
             tipo: "saida",
             descricao: saida.description || saida.descricao || "Despesa fixa",
-            valor: Math.abs(valorSaida),      // saída sempre negativa
+            valor: Math.abs(valorSaida),
             categoria: saida.category ?? saida.categoria ?? null,
             data: data,
             status: "pendente",
