@@ -157,5 +157,16 @@ export const TransacaoController = {
     } catch (error) {
       res.status(404).json({ erro: error.message });
     }
+  },
+  
+  async saveNewUser(req, res) {
+    try {
+      const { payload } = req.body;
+      const userid = req.usuarioId;
+      const result = await TransacaoBusiness.saveNewuser(payload, userid);
+      res.json(result);
+    } catch (error) {
+      res.status(404).json({ erro: error.message });
+    }
   }
 };
