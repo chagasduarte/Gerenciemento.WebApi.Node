@@ -43,8 +43,8 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')
 
 // Usar as rotas
 app.use('/auth', authRoutes);
-app.use('/dashboard', autentication, dashboardRouter);
-app.use('/transacoes', autentication, transacaoRouter);
+app.use('/dashboard', await autentication, dashboardRouter);
+app.use('/transacoes', await autentication, transacaoRouter);
 app.use('/user', userRouter);
 
 // Iniciar o servidor

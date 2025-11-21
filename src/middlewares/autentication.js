@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { UserBusiness } from "../business/user.business.js";
 
-export function autentication(req, res, next) {
+export async function autentication(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -16,11 +16,11 @@ export function autentication(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = UserBusiness.buscarPorId(decoded.id);
+    const user = await UserBusiness.buscarPorId(decoded.id);
     if(user)
       req.usuarioId = decoded.id;
     else 
-      res.status(404).json({error: 'Usuário não encontrado'})
+      throw new Error("Usuário não encontrado")
     next();
   } catch (err) {
     console.error('Erro ao verificar token:', err.message);

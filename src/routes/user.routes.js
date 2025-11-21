@@ -33,6 +33,6 @@ const upload = multer({ storage });
 router.post('/', upload.single("avatar"), UserController.criar);
 router.get('/avatar', UserController.getAvatar);
 router.post('/:id/avatar', upload.single('avatar'), UserController.uploadAvatar);
-router.get('/:id/avatar', autentication, UserController.getAvatar);
+router.get('/:id/avatar', await autentication, UserController.getAvatar);
 
 export default router;
