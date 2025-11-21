@@ -12,7 +12,7 @@ export const AuthController = {
       const resultado = await AuthBusiness.login(nome, senha);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(401).json({ erro: error.message });
+      res.status(401).json({ error: error.message });
     }
   }
 };
