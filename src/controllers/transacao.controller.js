@@ -161,9 +161,9 @@ export const TransacaoController = {
   
   async saveNewUser(req, res) {
     try {
-      const { payload } = req.body;
+      const { entradas, saidas } = req.body;
       const userid = req.usuarioId;
-      const result = await TransacaoBusiness.saveNewuser(payload, userid);
+      const result = await TransacaoBusiness.saveNewuser({entradas, saidas}, userid);
       res.json(result);
     } catch (error) {
       res.status(404).json({ erro: error.message });
