@@ -25,7 +25,14 @@ export const DashboardBusiness = {
       gastos_mensal_pendente,
       receita_mensal_pendente,
       saldo_acumuldado,
-      gastos_cartao
+      gastos_cartao,
+      hasSome: saldo_atual > 0 
+        || gastos_mensal > 0 
+        || receita_mensal > 0 
+        || gastos_mensal_pendente > 0 
+        || receita_mensal_pendente > 0
+        || saldo_acumuldado > 0
+        || gastos_cartao > 0
     };
   },
 
