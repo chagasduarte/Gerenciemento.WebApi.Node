@@ -128,7 +128,9 @@ export const TransacaoController = {
   async listaDespesa(req, res) {
     try {
       const {descricao} = req.query
-      const result = await TransacaoBusiness.listaDespesa(descricao);
+      const userid = req.usuarioId;
+
+      const result = await TransacaoBusiness.listaDespesa(descricao, userid);
       res.json(result);
     } catch (error) {
       res.status(404).json({ erro: error.message });

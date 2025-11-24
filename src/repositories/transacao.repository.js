@@ -212,8 +212,8 @@ export const TransacaoRepository = {
   },
 
   async listaDespesa(descricao) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status FROM transacoes t WHERE descricao = $1`;
-    const result = await pool.query(query, [descricao]);
+    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status FROM transacoes t WHERE descricao = $1 and userid = $2`;
+    const result = await pool.query(query, [descricao,userid]);
     return result.rows;
   },
 

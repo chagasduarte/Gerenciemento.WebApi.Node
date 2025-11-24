@@ -265,8 +265,8 @@ export const TransacaoBusiness = {
     return await TransacaoRepository.uptopago(id);
   },
 
-  async listaDespesa(descricao) {
-    const despesa = await TransacaoRepository.listaDespesa(descricao);
+  async listaDespesa(descricao, userid) {
+    const despesa = await TransacaoRepository.listaDespesa(descricao, userid);
 
     const soma = despesa.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
