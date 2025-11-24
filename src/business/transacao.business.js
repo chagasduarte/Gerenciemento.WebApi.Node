@@ -38,8 +38,8 @@ export const TransacaoBusiness = {
       }
 
       // --- Data inicial da compra ---
-      const dataCompra = new Date(payload.dataCompra);
-
+      const dataCompra = new Date(payload.data);
+       console.log("aqui", dataCompra);
       // --- Criar cada parcela ---
       const parcelasCriadas = [];
 
