@@ -4,6 +4,7 @@ import dashboardRouter from './src/routes/dashboard.routes.js';
 import transacaoRouter from './src/routes/transacao.routes.js';
 import userRouter from './src/routes/user.routes.js';
 import authRoutes from './src/routes/auth.routes.js';
+import cartaoRoutes from './src/routes/cartao.router.js';
 import { autentication } from './src/middlewares/autentication.js';
 
 import home from './pages/home.js';
@@ -45,6 +46,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')
 app.use('/auth', authRoutes);
 app.use('/dashboard', await autentication, dashboardRouter);
 app.use('/transacoes', await autentication, transacaoRouter);
+app.use('/cartao', await autentication, cartaoRoutes);
 app.use('/user', userRouter);
 
 // Iniciar o servidor
