@@ -34,7 +34,7 @@ export const TransacaoRepository = {
     return true;
   },
 
-  async listaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardId = null ) {
+  async listaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardId = null, mes, ano ) {
     let query = 'SELECT * FROM transacoes WHERE 1=1';
     const params = [];
     // Filtrar por usuário
@@ -65,7 +65,44 @@ export const TransacaoRepository = {
 
     if(cardId){
       params.push(cardId);
-      query += ` and cartaoid = $${params.length}`;
+      query += ` and cartaoid = $${params.length} `;
+    }
+    else {
+      params.push(ano);
+      params.push(mes);
+      query += ` and ispaycart is false 
+                UNION ALL
+                SELECT
+                  t.*
+                FROM transacoes t
+                JOIN cartoes c ON c.id = t.cartaoid
+                WHERE t.tipo = 'saida'
+                  AND t.status = 'pendente'
+                  AND t.ispaycart = true
+                  AND t.descricao LIKE '%Parcela'
+                  AND t.userid = $1
+                  AND t.data::date BETWEEN
+
+                      -- DATA FIM
+                      (
+                          make_date(
+                              $${params.length-1}::int,
+                              $${params.length}::int,
+                              EXTRACT(DAY FROM c.data_fatura)::int
+                          )
+                          - interval '1 month'
+                      )::date
+
+                      AND
+
+                      -- DATA INÍCIO
+                      (make_date(
+                          $${params.length-1}::int,
+                          $${params.length}::int,
+                          EXTRACT(DAY FROM c.data_fatura)::int
+                          )
+                          - interval '1 day'
+                      )::date`
     }
     
     // Ordenar por data crescente
@@ -180,7 +217,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async listaParceladas(inicio, fim, userid, cardId = null) {
+  async listaParceladas( inicio, fim, userid, cardId = null, mes, ano) {
     const params = [];
     params.push(inicio);
     params.push(fim);
@@ -191,8 +228,8 @@ export const TransacaoRepository = {
                 and t.status = 'pendente'
                 AND t."data"::date BETWEEN $1 AND $2
                 and descricao like '%Parcela'
-                AND userid = $3
-                AND t.ispaycart = false `;
+                AND userid = $3 `;
+
     if(cardId){
       params.push(cardId);
       query += `and cartaoid = $4 `;
@@ -235,13 +272,17 @@ export const TransacaoRepository = {
                       )::date
                       
                 ORDER BY data;`
+      params.push(ano);
+      params.push(mes);
     }
 
+    console.log(query)
+    console.log(params)
     const result = await pool.query(query, params);
     return result.rows;
   },
 
-  async listaAdicionais(inicio, fim, userid, cardId = null) {
+  async listaAdicionais(inicio, fim, userid, cardId = null, mes, ano) {
     const params = [];
     params.push(inicio);
     params.push(fim);
@@ -255,7 +296,48 @@ export const TransacaoRepository = {
                 AND userid = $3 `;
     if(cardId){
       params.push(cardId);
-      query += `and cartaoid = $4`;
+      query += `and cartaoid = $4 `;
+    }
+    else {
+      query += `and ispaycart is false 
+                UNION ALL
+                SELECT
+                  t.id, t.descricao, t.tipo, t.valor, t.categoria,
+                  TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data,
+                  t.status, t.ispaycart
+                FROM transacoes t
+                JOIN cartoes c ON c.id = t.cartaoid
+                WHERE t.tipo = 'saida'
+                  AND t.status = 'pendente'
+                  AND t.ispaycart = true
+                  AND t.descricao LIKE '%Parcela'
+                  AND t.userid = $3
+                  AND t.data::date BETWEEN
+
+                      -- DATA FIM
+                      (
+                          make_date(
+                              $4::int,
+                              $5::int,
+                              EXTRACT(DAY FROM c.data_fatura)::int
+                          )
+                          - interval '1 month'
+                      )::date
+
+                      AND
+
+                      -- DATA INÍCIO
+                      (make_date(
+                          $4::int,
+                          $5::int,
+                          EXTRACT(DAY FROM c.data_fatura)::int
+                          )
+                          - interval '1 day'
+                      )::date
+                      
+                ORDER BY data;`
+      params.push(ano);
+      params.push(mes);
     }
     
     const result = await pool.query(query, params);

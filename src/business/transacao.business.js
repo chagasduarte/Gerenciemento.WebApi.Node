@@ -210,9 +210,9 @@ export const TransacaoBusiness = {
     inicio = formatar(inicio);
     fim    = formatar(fim);
 
-    const parceladas = await TransacaoRepository.listaParceladas(inicio, fim, userid, cardId);
-    const adicionais = await TransacaoRepository.listaAdicionais(inicio, fim, userid, cardId);
-    const pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', inicio, fim, userid, cardId);
+    const parceladas = await TransacaoRepository.listaParceladas(inicio, fim, userid, cardId, mes, ano);
+    const adicionais = await TransacaoRepository.listaAdicionais(inicio, fim, userid, cardId, mes, ano);
+    const pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', inicio, fim, userid, cardId, mes, ano);
     
     const soma_parcelados = parceladas.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
