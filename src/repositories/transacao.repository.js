@@ -69,7 +69,7 @@ export const TransacaoRepository = {
 
     if(cardId){
       params.push(cardId);
-      query += `and cardid = $${params.length}`;
+      query += ` and cartaoid = $${params.length}`;
     }
     
     // Ordenar por data crescente
@@ -185,38 +185,46 @@ export const TransacaoRepository = {
   },
 
   async listaParceladas(mes, ano, userid, cardId = null) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
+    const params = [];
+    params.push(mes);
+    params.push(ano);
+    params.push(userid);
+    let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
                 and EXTRACT(MONTH FROM data) = $1
                 and EXTRACT(YEAR FROM data) = $2
                 and descricao like '%Parcela'
-                AND userid = $3`;
+                AND userid = $3 `;
     if(cardId){
-      query += `and cardid = $4`;
+      params.push(cardId);
+      query += `and cartaoid = $4`;
     }
-    query += `;`;
 
-    const result = await pool.query(query, [mes, ano, userid, cardId]);
+    const result = await pool.query(query, params);
     return result.rows;
   },
 
   async listaAdicionais(mes, ano, userid, cardId = null) {
-    const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
+    const params = [];
+    params.push(mes);
+    params.push(ano);
+    params.push(userid);
+    let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
                 and EXTRACT(MONTH FROM data) = $1
                 and EXTRACT(YEAR FROM data) = $2
                 and descricao not like '%Parcela'
-                AND userid = $3`;
+                AND userid = $3 `;
     if(cardId){
-      query += `and cardid = $4`;
+      params.push(cardId);
+      query += `and cartaoid = $4`;
     }
-    query += `;`;
     
-    const result = await pool.query(query, [mes, ano, userid, cardId]);
+    const result = await pool.query(query, params);
     return result.rows;
   },
 
