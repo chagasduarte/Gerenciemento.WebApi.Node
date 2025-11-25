@@ -191,10 +191,50 @@ export const TransacaoRepository = {
                 and t.status = 'pendente'
                 AND t."data"::date BETWEEN $1 AND $2
                 and descricao like '%Parcela'
-                AND userid = $3 `;
+                AND userid = $3
+                AND t.ispaycart = false `;
     if(cardId){
       params.push(cardId);
-      query += `and cartaoid = $4`;
+      query += `and cartaoid = $4 `;
+    }
+    else {
+      query += `and ispaycart is false 
+                UNION ALL
+                SELECT
+                  t.id, t.descricao, t.tipo, t.valor, t.categoria,
+                  TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data,
+                  t.status, t.ispaycart
+                FROM transacoes t
+                JOIN cartoes c ON c.id = t.cartaoid
+                WHERE t.tipo = 'saida'
+                  AND t.status = 'pendente'
+                  AND t.ispaycart = true
+                  AND t.descricao LIKE '%Parcela'
+                  AND t.userid = $3
+                  AND t.data::date BETWEEN
+
+                      -- DATA FIM
+                      (
+                          make_date(
+                              $4::int,
+                              $5::int,
+                              EXTRACT(DAY FROM c.data_fatura)::int
+                          )
+                          - interval '1 month'
+                      )::date
+
+                      AND
+
+                      -- DATA INÍCIO
+                      (make_date(
+                          $4::int,
+                          $5::int,
+                          EXTRACT(DAY FROM c.data_fatura)::int
+                          )
+                          - interval '1 day'
+                      )::date
+                      
+                ORDER BY data;`
     }
 
     const result = await pool.query(query, params);
