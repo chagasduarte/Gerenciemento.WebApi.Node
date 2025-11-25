@@ -360,7 +360,7 @@ async somaTransacoes(tipo = null, status = null, mes = null, ano = null, userid,
                 WHERE t.tipo = 'saida'
                   AND t.status = 'pendente'
                   AND t.ispaycart = true
-                  AND t.descricao LIKE '%Parcela'
+                  AND t.descricao not LIKE '%Parcela'
                   AND t.userid = $3
                   AND t.data::date BETWEEN
 
