@@ -203,7 +203,7 @@ export const TransacaoBusiness = {
 
       // fim = início + 1 mês
       fim = new Date(inicio);
-      fim.setMonth(fim.getMonth() - 1);
+      inicio.setMonth(fim.getMonth() - 1);
     }
 
     // converte tudo para YYYY-MM-DD
