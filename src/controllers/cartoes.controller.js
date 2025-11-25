@@ -15,7 +15,7 @@ export const CartaoController = {
     },
     async listar(req, res) {
         try {
-            const userid = req.userId;
+            const userid = req.usuarioId;
             const response = await CartaoBusiness.listar(userid)
             res.status(201).json(response);
         }
