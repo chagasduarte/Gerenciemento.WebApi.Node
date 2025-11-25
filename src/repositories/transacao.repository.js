@@ -2,12 +2,12 @@ import { pool } from "../config/database.js";
 
 export const TransacaoRepository = {
   async criar(transacao, userid) {
-    const { tipo, descricao, valor, categoria, data, status, ispaycart } = transacao;
+    const { tipo, descricao, valor, categoria, data, status, ispaycart, cartaoid } = transacao;
     const result = await pool.query(
-      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status, userid, ispaycart)
+      `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status, userid, ispaycart, cartaoid)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8 )
        RETURNING *`,
-      [tipo, descricao, valor, categoria, data, status, userid, ispaycart]
+      [tipo, descricao, valor, categoria, data, status, userid, ispaycart, cartaoid]
     );
     return result.rows[0];
   },
@@ -34,7 +34,7 @@ export const TransacaoRepository = {
     return true;
   },
 
-  async listaTransacoes(tipo = null, status = null, mes = null, ano = null, userid, cardId = null ) {
+  async listaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardId = null ) {
     let query = 'SELECT * FROM transacoes WHERE 1=1';
     const params = [];
     // Filtrar por usuário
@@ -56,15 +56,11 @@ export const TransacaoRepository = {
     }
 
     // Filtrar por mês
-    if (mes) {
-      params.push(mes);
-      query += ` AND EXTRACT(MONTH FROM data) = $${params.length}`;
-    }
-
-    // Filtrar por ano
-    if (ano) {
-      params.push(ano);
-      query += ` AND EXTRACT(YEAR FROM data) = $${params.length}`;
+    if (inicio && fim) {
+      params.push(inicio);
+      query += ` AND data::date BETWEEN $${params.length}`;
+      params.push(fim);
+      query += ` AND $${params.length}`;
     }
 
     if(cardId){
@@ -184,17 +180,16 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async listaParceladas(mes, ano, userid, cardId = null) {
+  async listaParceladas(inicio, fim, userid, cardId = null) {
     const params = [];
-    params.push(mes);
-    params.push(ano);
+    params.push(inicio);
+    params.push(fim);
     params.push(userid);
     let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
-                and EXTRACT(MONTH FROM data) = $1
-                and EXTRACT(YEAR FROM data) = $2
+                AND t."data"::date BETWEEN $1 AND $2
                 and descricao like '%Parcela'
                 AND userid = $3 `;
     if(cardId){
@@ -206,17 +201,16 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async listaAdicionais(mes, ano, userid, cardId = null) {
+  async listaAdicionais(inicio, fim, userid, cardId = null) {
     const params = [];
-    params.push(mes);
-    params.push(ano);
+    params.push(inicio);
+    params.push(fim);
     params.push(userid);
     let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
-                and EXTRACT(MONTH FROM data) = $1
-                and EXTRACT(YEAR FROM data) = $2
+                AND t."data"::date BETWEEN $1 AND $2
                 and descricao not like '%Parcela'
                 AND userid = $3 `;
     if(cardId){

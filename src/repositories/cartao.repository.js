@@ -17,5 +17,12 @@ export const CartaoRepository = {
         `, [userid]);
 
     return result.rows;
+  },
+  async buscar(cartaoid) {
+    const result = await pool.query(`
+        SELECT * FROM cartoes where id = $1
+        `, [cartaoid]);
+
+    return result.rows[0];
   }
 }
