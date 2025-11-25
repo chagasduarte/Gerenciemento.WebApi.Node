@@ -14,6 +14,6 @@ export const CartaoRepository = {
   async listar(userid) {
     return await pool.query(`
         SELECT * FROM cartoes where userid = $1
-        `, [userid]);
+        `, [userid]).rows;
   }
 }
