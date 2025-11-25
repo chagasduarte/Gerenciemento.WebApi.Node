@@ -5,7 +5,7 @@ export const CartaoController = {
         try {
             const cartao = req.body;
             const userid = req.userId;
-            const response = CartaoBusiness.criar(cartao, userid)
+            const response = await CartaoBusiness.criar(cartao, userid)
 
             res.status(201).json(response);
         }
@@ -16,7 +16,7 @@ export const CartaoController = {
     async listar(req, res) {
         try {
             const userid = req.userId;
-            const response = CartaoBusiness.listar(userid)
+            const response = await CartaoBusiness.listar(userid)
             res.status(201).json(response);
         }
         catch (error) {
