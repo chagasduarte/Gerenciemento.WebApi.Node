@@ -111,47 +111,97 @@ export const TransacaoRepository = {
     const result = await pool.query(query, params);
     return result.rows;
   },
+async somaTransacoes(tipo = null, status = null, mes = null, ano = null, userid, ispaycart = null) {
 
-  async somaTransacoes( tipo = null, status = null, mes = null, ano = null, userid, ispaycart = null ) {
-    let query = 'SELECT sum(valor) as soma FROM transacoes WHERE 1=1';
-    const params = [];
+  let query = `SELECT SUM(t.valor) AS soma
+               FROM transacoes t
+               LEFT JOIN cartoes c ON c.id = t.cartaoid
+               WHERE 1=1`;
 
-     // Filtrar por usuário
-    if (userid) {
-      params.push(userid);
-      query += ` AND userid = $${params.length}`;
-    }
-    if (ispaycart) {
-      params.push(ispaycart);
-      query += ` AND ispaycart = $${params.length}`;
-    }
+  const params = [];
 
-    // Filtrar por tipo
+  // Filtrar por usuário
+  params.push(userid);
+  query += ` AND t.userid = $${params.length}`;
+
+  // Se é pagamento de cartão → usar lógica especial
+  if (ispaycart === true || ispaycart === 'true') {
+
+    // tipo
     if (tipo) {
       params.push(tipo);
-      query += ` AND tipo = $${params.length}`;
+      query += ` AND t.tipo = $${params.length}`;
     }
 
-    // Filtrar por status
+    // status
     if (status) {
       params.push(status);
-      query += ` AND status = $${params.length}`;
+      query += ` AND t.status = $${params.length}`;
     }
 
-    // Filtrar por mês
+    // mês e ano obrigatórios para esse cálculo
+    params.push(ano);
+    params.push(mes);
+
+    const anoParam = params.length - 1;   // $ano
+    const mesParam = params.length;       // $mes
+
+    // BETWEEN aplicado como na listaTransacoes
+    query += `
+      AND t.ispaycart = true
+      AND t.descricao LIKE '%Parcela'
+      AND t.data::date BETWEEN
+          (
+            make_date(
+              $${anoParam}::int,
+              $${mesParam}::int,
+              EXTRACT(DAY FROM c.data_fatura)::int
+            ) - interval '1 month'
+          )::date
+      AND
+          (
+            make_date(
+              $${anoParam}::int,
+              $${mesParam}::int,
+              EXTRACT(DAY FROM c.data_fatura)::int
+            ) - interval '1 day'
+          )::date
+    `;
+  }
+  else {
+    // ispaycart = false → usa filtros comuns
+
+    query += ` AND t.ispaycart = false`;
+
+    // tipo
+    if (tipo) {
+      params.push(tipo);
+      query += ` AND t.tipo = $${params.length}`;
+    }
+
+    // status
+    if (status) {
+      params.push(status);
+      query += ` AND t.status = $${params.length}`;
+    }
+
+    // mês
     if (mes) {
       params.push(mes);
-      query += ` AND EXTRACT(MONTH FROM data) = $${params.length}`;
+      query += ` AND EXTRACT(MONTH FROM t.data) = $${params.length}`;
     }
 
-    // Filtrar por ano
+    // ano
     if (ano) {
       params.push(ano);
-      query += ` AND EXTRACT(YEAR FROM data) = $${params.length}`;
+      query += ` AND EXTRACT(YEAR FROM t.data) = $${params.length}`;
     }
-    const result = await pool.query(query, params);
-    return result.rows[0].soma | 0;
-  },
+  }
+
+  const result = await pool.query(query, params);
+  return result.rows[0].soma || 0;
+}
+,
 
   async listaDespesasParceladas(mes, ano, userid){
     const query = `SELECT
