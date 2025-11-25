@@ -5,7 +5,7 @@ export const TransacaoRepository = {
     const { tipo, descricao, valor, categoria, data, status, ispaycart, cartaoid } = transacao;
     const result = await pool.query(
       `INSERT INTO transacoes (tipo, descricao, valor, categoria, data, status, userid, ispaycart, cartaoid)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8 )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9 )
        RETURNING *`,
       [tipo, descricao, valor, categoria, data, status, userid, ispaycart, cartaoid]
     );
