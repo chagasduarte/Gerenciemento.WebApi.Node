@@ -24,14 +24,14 @@ export const TransacaoController = {
   async listar(req, res) {
     try {
       // Recebe filtros via query string
-      const { mes, ano } = req.query;
+      const { mes, ano, cardId } = req.query;
       const userid = req.usuarioId;
 
       // Converte mês/ano para números
       const mesNum = mes ? parseInt(mes) : null;
       const anoNum = ano ? parseInt(ano) : null;
 
-      const transacoes = await TransacaoBusiness.listar(mesNum, anoNum, userid);
+      const transacoes = await TransacaoBusiness.listar(mesNum, anoNum, userid, cardId);
 
       res.json(transacoes);
     } catch (err) {

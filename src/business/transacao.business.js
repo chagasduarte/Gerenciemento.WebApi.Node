@@ -178,10 +178,10 @@ export const TransacaoBusiness = {
       throw err;
     }
   },
-  async listar(mes, ano, userid) {
-    const parceladas = await TransacaoRepository.listaParceladas(mes, ano, userid);
-    const adicionais = await TransacaoRepository.listaAdicionais(mes, ano, userid);
-    const pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', mes, ano, userid);
+  async listar(mes, ano, userid, cardId) {
+    const parceladas = await TransacaoRepository.listaParceladas(mes, ano, userid, cardId);
+    const adicionais = await TransacaoRepository.listaAdicionais(mes, ano, userid, cardId);
+    const pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', mes, ano, userid, cardId);
     
     const soma_parcelados = parceladas.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)

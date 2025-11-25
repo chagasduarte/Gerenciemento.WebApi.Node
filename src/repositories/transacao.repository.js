@@ -34,7 +34,7 @@ export const TransacaoRepository = {
     return true;
   },
 
-  async listaTransacoes(tipo = null, status = null, mes = null, ano = null, userid ) {
+  async listaTransacoes(tipo = null, status = null, mes = null, ano = null, userid, cardId = null ) {
     let query = 'SELECT * FROM transacoes WHERE 1=1';
     const params = [];
     // Filtrar por usuário
@@ -67,6 +67,11 @@ export const TransacaoRepository = {
       query += ` AND EXTRACT(YEAR FROM data) = $${params.length}`;
     }
 
+    if(cardId){
+      params.push(cardId);
+      query += `and cardid = $${params.length}`;
+    }
+    
     // Ordenar por data crescente
     query += ' ORDER BY data ASC';
 
@@ -179,7 +184,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async listaParceladas(mes, ano, userid) {
+  async listaParceladas(mes, ano, userid, cardId = null) {
     const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
@@ -187,12 +192,17 @@ export const TransacaoRepository = {
                 and EXTRACT(MONTH FROM data) = $1
                 and EXTRACT(YEAR FROM data) = $2
                 and descricao like '%Parcela'
-                AND userid = $3;`;
-    const result = await pool.query(query, [mes, ano, userid]);
+                AND userid = $3`;
+    if(cardId){
+      query += `and cardid = $4`;
+    }
+    query += `;`;
+
+    const result = await pool.query(query, [mes, ano, userid, cardId]);
     return result.rows;
   },
 
-  async listaAdicionais(mes, ano, userid) {
+  async listaAdicionais(mes, ano, userid, cardId = null) {
     const query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, ispaycart
               FROM public.transacoes t
               where t.tipo = 'saida'
@@ -200,8 +210,13 @@ export const TransacaoRepository = {
                 and EXTRACT(MONTH FROM data) = $1
                 and EXTRACT(YEAR FROM data) = $2
                 and descricao not like '%Parcela'
-                AND userid = $3;`;
-    const result = await pool.query(query, [mes, ano, userid]);
+                AND userid = $3`;
+    if(cardId){
+      query += `and cardid = $4`;
+    }
+    query += `;`;
+    
+    const result = await pool.query(query, [mes, ano, userid, cardId]);
     return result.rows;
   },
 
@@ -247,7 +262,7 @@ export const TransacaoRepository = {
                       and EXTRACT(MONTH FROM data) = $2
                       and EXTRACT(YEAR FROM data) = $3
                       and ispaycart = true
-                      AND userid = $4;`;
+                      AND userid = $4`;
     const result = await pool.query(query, [dia, mes, ano, userid]);
     return result.rows;
   }
