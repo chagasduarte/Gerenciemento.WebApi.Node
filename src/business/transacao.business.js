@@ -1,5 +1,10 @@
 import { TransacaoRepository } from "../repositories/transacao.repository.js";
-import { CartaoRepository } from "../repositories/cartao.repository.js"
+import { CartaoRepository } from "../repositories/cartao.repository.js";
+import { getPeriodoFatura } from "../functions/getPeriodoFatura.function.js";
+import { unirAgrupamentos } from "../functions/unirAgrupamentos.function.js";
+
+
+
 export const TransacaoBusiness = {
   async criar(transacao, userid) {
     if (!['entrada', 'saida', 'cartao'].includes(transacao.tipo)) {
@@ -273,23 +278,63 @@ export const TransacaoBusiness = {
     await this.buscarPorId(id); // garante que existe
     return await TransacaoRepository.excluir(id);
   },
-
+  
   async listaDespesasParceladas(mes, ano, userid) {
-    const parcelas = await TransacaoRepository.listaDespesasParceladas(mes, ano, userid);
-    const mensal = parcelas.reduce((acc, p) => ({
+    const cartoes = await CartaoRepository.listar(userid);
+    
+    const mm = String(mes).padStart(2, '0');
+    const data_inicio = `${ano}-${mm}-01`;
+    const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
+    let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
+    
+    const parcelas = await TransacaoRepository.listaDespesasParceladas(data_inicio, data_fim, userid);
+    
+    const array = [];
+    array.push(...parcelas);
+
+    if (cartoes && cartoes.length > 0) {
+      for (const cartao of cartoes) {
+        const diaFatura = cartao.dia_fatura;
+        const periodo = getPeriodoFatura(diaFatura, mes, ano);
+        const parcelasCartao = await TransacaoRepository.listaDespesasParceladas(periodo.inicio, periodo.fim, userid, cartao.id);
+        array.push(...parcelasCartao)
+      }
+    }
+    const mensal = array.reduce((acc, p) => ({
       pendente: acc.pendente + parseFloat(p.valor_pendente_mes)
     }), { pendente: 0  });
 
-    return { parcelas, mensal };
+    return { parcelas: array, mensal };
   },
 
   async agrupamentoTipo(mes, ano, userid) {
-    const agrupamento = await TransacaoRepository.agrupamentoTipo(mes, ano, userid);
-    const soma = agrupamento.reduce((acc, p) => ({
+
+    const cartoes = await CartaoRepository.listar(userid);
+    
+    const mm = String(mes).padStart(2, '0');
+    const data_inicio = `${ano}-${mm}-01`;
+    const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
+    let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
+
+    const agrupamento = await TransacaoRepository.agrupamentoTipo(data_inicio, data_fim, userid);
+    
+    let array = [];
+    array.push(...agrupamento);
+
+    if (cartoes && cartoes.length > 0) {
+      for (const cartao of cartoes) {
+        const diaFatura = cartao.dia_fatura;
+        const periodo = getPeriodoFatura(diaFatura, mes, ano);
+        const parcelasCartao = await TransacaoRepository.agrupamentoTipo(periodo.inicio, periodo.fim, userid, cartao.id);
+        array = unirAgrupamentos(array, parcelasCartao);
+      }
+    }
+
+    const soma = array.reduce((acc, p) => ({
        soma: acc.soma + parseFloat(p.total_tipo)
     }), {soma: 0})
 
-    return { soma, agrupamento}
+    return { soma, agrupamento: array}
   },
   
   async uptopago(id) {
