@@ -124,10 +124,7 @@ export const TransacaoRepository = {
 
     const result = await pool.query(query, params);
     return Number(result.rows[0].soma || 0);
-  }
-
-,
-
+  },
   async listaDespesasParceladas(inicio, fim, userid, cardid = null){
     let query = `SELECT
                     descricao, 
