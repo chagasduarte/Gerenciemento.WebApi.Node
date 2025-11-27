@@ -195,7 +195,10 @@ export const TransacaoRepository = {
                   FROM transacoes
                   WHERE tipo = 'saida'
                     AND descricao ILIKE '%- Parcela'
-                    AND data between $1 and $2
+                    AND descricao in (select descricao from transacoes d where  
+                                              data between $1 and $2
+                                              AND descricao ILIKE '%- Parcela' 
+                                              and tipo = 'saida')
                     AND userid = $3`;
     if(cardid){
       query += ` AND cartaoid = ${cardid}`
