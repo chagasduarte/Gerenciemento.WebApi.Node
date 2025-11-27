@@ -186,38 +186,44 @@ export const TransacaoBusiness = {
   },
   async listar(mes, ano, userid, cardId) {
 
-    let inicio = new Date(`${ano}-${String(mes).padStart(2, "0")}-01`);
-    let fim    = new Date(ano, mes, 0);  // último dia do mês automaticamente
+    const cartoes = await CartaoRepository.listar(userid);
 
-    // sempre declara o formatar fora
-    const formatar = d => d.toISOString().slice(0, 10);
+    const mm = String(mes).padStart(2, '0');
+    let data_inicio = `${ano}-${mm}-01`;
+    const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
+    let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
 
     // se tiver cartão, ajusta pela data de fatura
     if (cardId) {
-
       const cartao = await CartaoRepository.buscar(cardId);
-
-      const dataFatura = new Date(cartao.data_fatura);
-
-      if (isNaN(dataFatura)) {
-        throw new Error("Data de fatura inválida: " + cartao.data_fatura);
-      }
-
-      // início na data de fatura do mês
-      inicio.setDate(dataFatura.getDate());
-
-      // fim = início + 1 mês
-      fim = new Date(inicio);
-      inicio.setMonth(fim.getMonth() - 1);
+      const diaFatura = cartao.dia_fatura;
+      const periodo = getPeriodoFatura(diaFatura, mes, ano);
+      data_inicio = periodo.inicio;
+      data_fim = periodo.fim;
     }
 
-    // converte tudo para YYYY-MM-DD
-    inicio = formatar(inicio);
-    fim    = formatar(fim);
+    let parceladas = await TransacaoRepository.listaParceladas(data_inicio, data_fim, userid, cardId);
+    let adicionais = await TransacaoRepository.listaAdicionais(data_inicio, data_fim, userid, cardId);
+    let pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', data_inicio, data_fim, userid, cardId);
 
-    const parceladas = await TransacaoRepository.listaParceladas(inicio, fim, userid, cardId, mes, ano);
-    const adicionais = await TransacaoRepository.listaAdicionais(inicio, fim, userid, cardId, mes, ano);
-    const pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', inicio, fim, userid, cardId, mes, ano);
+
+    if(!cardId && cartoes && cartoes.length > 0) {
+      for (const cartao of cartoes) {
+
+        const periodo = getPeriodoFatura(cartao.dia_fatura, mes, ano);
+
+        const parceladasCartoes = await TransacaoRepository.listaParceladas(periodo.inicio, periodo.fim, userid, cartao.id);
+        const adicionaisCartoes = await TransacaoRepository.listaAdicionais(periodo.inicio, periodo.fim, userid, cartao.id);
+        const pagosCartoes = await TransacaoRepository.listaTransacoes('saida', 'pago', periodo.inicio, periodo.fim, userid, cartao.id);
+        
+        parceladas.push(...parceladasCartoes);
+        adicionais.push(...adicionaisCartoes);
+        pagos.push(...pagosCartoes);
+
+      }
+    } 
+
+
     
     const soma_parcelados = parceladas.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
