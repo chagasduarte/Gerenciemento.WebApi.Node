@@ -19,7 +19,7 @@ export const TransacaoBusiness = {
   async criarParcelada(payload, userId) {
     try {
       // --- Validações básicas ---
-      if (!payload?.parcelado || !payload?.ispaycart) {
+      if (!payload?.parcelado && !payload?.ispaycart) {
         throw new Error("Transação não é parcelada ou não é de cartão.");
       }
 
