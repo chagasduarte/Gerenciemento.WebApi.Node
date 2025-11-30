@@ -245,8 +245,13 @@ export const TransacaoBusiness = {
     }
   },
   async listarEntradas(mes, ano, userid) {
-    const entradas_receber = await TransacaoRepository.listaTransacoes('entrada', 'pendente', mes, ano, userid);
-    const entradas_recebidas = await TransacaoRepository.listaTransacoes('entrada', 'pago', mes, ano, userid);
+    const mm = String(mes).padStart(2, '0');
+    let data_inicio = `${ano}-${mm}-01`;
+    const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
+    let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
+
+    const entradas_receber = await TransacaoRepository.listaTransacoes('entrada', 'pendente', data_inicio, data_fim, userid);
+    const entradas_recebidas = await TransacaoRepository.listaTransacoes('entrada', 'pago', data_inicio, data_fim, userid);
     
     const soma_receber = entradas_receber.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)

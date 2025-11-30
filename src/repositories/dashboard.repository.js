@@ -48,8 +48,8 @@ export const DashboardRepository = {
   return Number(total.rows[0].total | 0)
 },
   // saldo projetado por mês (considera todas as transações, pagas ou pendentes)
-  async getProjecaoMensal(ano, userid) {
-    const query = `
+  async getProjecaoMensal(ano, userid, cartaoid = null) {
+    let query = `
       SELECT
         DATE_TRUNC('month', data) AS mes_ano,
         EXTRACT(YEAR FROM data) AS ano,
@@ -78,10 +78,18 @@ export const DashboardRepository = {
           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
         ) AS saldo_acumulado
       FROM transacoes
-      where EXTRACT(YEAR FROM data) = $1 AND userid = $2
-      GROUP BY ano, mes_ano, mes
-      ORDER BY ano, mes;
-    `;
+      where EXTRACT(YEAR FROM data) = $1 
+      AND userid = $2`;
+  if(cartaoid){
+    query += `and cartaoid = ${cartaoid}`
+  }
+  else {
+    query += ` and cartaoid is null`
+  }
+      
+  query += ` GROUP BY ano, mes_ano, mes
+              ORDER BY ano, mes;
+            `;
     const { rows } = await pool.query(query, [ano, userid]);
     return rows;
   },
