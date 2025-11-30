@@ -50,45 +50,95 @@ export const DashboardRepository = {
   // saldo projetado por mês (considera todas as transações, pagas ou pendentes)
   async getProjecaoMensal(ano, userid, cartaoid = null) {
     let query = `
-      SELECT
-        DATE_TRUNC('month', data) AS mes_ano,
-        EXTRACT(YEAR FROM data) AS ano,
-        EXTRACT(MONTH FROM data) AS mes,
-        SUM(CASE WHEN tipo = 'entrada' THEN valor ELSE 0 END) AS soma_entrada,
-        SUM(CASE WHEN tipo = 'saida' THEN valor ELSE 0 END) AS soma_saida,
-        -- saldo mensal (entradas - saídas)
-        SUM(
-          CASE 
-            WHEN tipo = 'entrada' THEN valor
-            WHEN tipo = 'saida' THEN -valor
+    SELECT
+    DATE_TRUNC(
+        'month',
+        CASE 
+            WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+            ELSE t.data
+        END
+    ) AS mes_ano,
+
+    EXTRACT(
+        YEAR FROM 
+        CASE 
+            WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+            ELSE t.data
+        END
+    ) AS ano,
+
+    EXTRACT(
+        MONTH FROM 
+        CASE 
+            WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+            ELSE t.data
+        END
+    ) AS mes,
+
+    SUM(CASE WHEN t.tipo = 'entrada' THEN t.valor ELSE 0 END) AS soma_entrada,
+    SUM(CASE WHEN t.tipo = 'saida' THEN t.valor ELSE 0 END) AS soma_saida,
+
+    -- saldo do mês
+    SUM(
+        CASE 
+            WHEN t.tipo = 'entrada' THEN t.valor
+            WHEN t.tipo = 'saida' THEN -t.valor
             ELSE 0 
-          END
-        ) AS saldo_mensal,
-        -- saldo acumulado (progressivo)
+        END
+    ) AS saldo_mensal,
+
+    -- saldo acumulado usando a data correta
+    SUM(
         SUM(
-          SUM(
             CASE 
-              WHEN tipo = 'entrada' THEN valor
-              WHEN tipo = 'saida' THEN -valor
-              ELSE 0 
+                WHEN t.tipo = 'entrada' THEN t.valor
+                WHEN t.tipo = 'saida' THEN -t.valor
+                ELSE 0 
             END
-          )
-        ) OVER (
-          ORDER BY DATE_TRUNC('month', data)
-          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        ) AS saldo_acumulado
-      FROM transacoes
-      where EXTRACT(YEAR FROM data) = $1 
-      AND userid = $2`;
-  if(cartaoid){
-    query += `and cartaoid = ${cartaoid}`
-  }
-  else {
-    query += ` and cartaoid is null`
-  }
-      
-  query += ` GROUP BY ano, mes_ano, mes
-              ORDER BY ano, mes;
+        )
+    ) OVER (
+        ORDER BY DATE_TRUNC(
+            'month',
+            CASE 
+                WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+                ELSE t.data
+            END
+        )
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS saldo_acumulado
+
+FROM transacoes t
+WHERE EXTRACT(
+        YEAR FROM 
+        CASE 
+            WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+            ELSE t.data
+        END
+    ) = $1
+  AND t.userid = $2
+GROUP BY 
+    DATE_TRUNC(
+        'month',
+        CASE 
+            WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+            ELSE t.data
+        END
+    ),
+    EXTRACT(
+        YEAR FROM 
+        CASE 
+            WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+            ELSE t.data
+        END
+    ),
+    EXTRACT(
+        MONTH FROM 
+        CASE 
+            WHEN t.cartaoid IS NOT NULL THEN t.pagamento
+            ELSE t.data
+        END
+    )
+    ORDER BY mes_ano;
             `;
     const { rows } = await pool.query(query, [ano, userid]);
     return rows;
