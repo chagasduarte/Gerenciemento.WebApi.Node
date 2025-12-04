@@ -17,7 +17,7 @@ export function getPeriodoFatura(diaFatura, mes, ano) {
 
   if (diaFatura === 1) {
     inicio = `${anoAnterior}-${mmAnterior}-01`;
-    fim = `${anoAnterior}-${mmAnterior}-${ultimoDiaMesAnterior}`;
+    fim = `${ano}-${mmAnterior}-${ultimoDiaMesAnterior}`;
   } else {
     inicio = `${anoAnterior}-${mmAnterior}-${String(diaFatura).padStart(2, '0')}`;
     fim = `${ano}-${mmAtual}-${String(diaFatura - 1).padStart(2, '0')}`;
