@@ -13,7 +13,7 @@ export const DashboardBusiness = {
     const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
     let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
 
-
+    
     const dataAtual = new Date();
     const mesAtual = dataAtual.getMonth() + 1;
     const anoAtual = dataAtual.getFullYear();
