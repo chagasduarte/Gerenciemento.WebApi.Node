@@ -301,7 +301,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
   async extrato(limit, mes, ano, userid){
-    let query = `SELECT SUM(t.valor) AS soma
+    let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
                 FROM transacoes t
                 WHERE 1=1`;
 
