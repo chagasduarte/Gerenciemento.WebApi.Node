@@ -77,7 +77,7 @@ export const TransacaoRepository = {
     const result = await pool.query(query, params);
     return result.rows;
   },
-  async somaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardid = null) {
+  async somaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardid = null, so = null) {
 
     let query = `SELECT SUM(t.valor) AS soma
                 FROM transacoes t
@@ -121,7 +121,10 @@ export const TransacaoRepository = {
       // Buscar SOMENTE transações sem cartão
       query += ` AND t.cartaoid IS NULL`;
     }
-
+    if(so){
+      console.log(query)
+      console.log(params)
+    }
     const result = await pool.query(query, params);
     return Number(result.rows[0].soma || 0);
   },
@@ -296,5 +299,29 @@ export const TransacaoRepository = {
                       AND userid = $4`;
     const result = await pool.query(query, [dia, mes, ano, userid]);
     return result.rows;
+  },
+  async extrato(limit, mes, ano, userid){
+    let query = `SELECT SUM(t.valor) AS soma
+                FROM transacoes t
+                WHERE 1=1`;
+
+    const params = [];
+
+    params.push(userid);
+    query += ` AND t.userid = $${params.length}`;
+
+    if (ano) {
+      params.push(ano);
+      query += ` AND extract(year from t.data) = $${params.length}`;
+    }
+
+    if (mes) {
+      params.push(mes);
+      query += ` AND extract(month from t.data) = $${params.length}`;
+    }
+    query += `limit ${limit}`;
+
+    const result = await pool.query(query, params);
+    return resujlt.rows;
   }
 };

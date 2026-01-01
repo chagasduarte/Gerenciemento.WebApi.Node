@@ -170,5 +170,15 @@ export const TransacaoController = {
     } catch (error) {
       res.status(404).json({ erro: error.message });
     }
+  },
+  async extrato(req, res) {
+    try {
+      const {limit, mes, ano} = req.query;
+      const userid = req.usuarioId;
+      const result = await TransacaoBusiness.extrato(limit, mes, ano, userid);
+      res.json(result);
+    } catch (erro){
+      res.status(404).json({ erro: error.message });
+    }
   }
 };

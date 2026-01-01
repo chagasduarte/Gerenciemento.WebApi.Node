@@ -369,5 +369,10 @@ export const TransacaoBusiness = {
        soma: acc.soma + parseFloat(p.valor)
     }), {soma: 0})
     return { soma, result}
+  },
+
+  async extrato(limit, mes, ano, userid) {
+    const result = await TransacaoRepository.extrato(limit, mes, ano, userid);
+    return result;
   }
 };

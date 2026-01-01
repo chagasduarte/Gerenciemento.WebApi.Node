@@ -4,6 +4,7 @@ import { TransacaoController } from "../controllers/transacao.controller.js";
 const router = express.Router();
 
 router.get("/parceladas", TransacaoController.listaDespesasParceladas);
+router.get("/extrato", TransacaoController.extrato);
 router.post("/save", TransacaoController.saveNewUser);
 router.post("/parceladas", TransacaoController.criarParcelada);
 router.get("/agrupadaPorTipos", TransacaoController.agrupamentoTipo);
