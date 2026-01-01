@@ -178,7 +178,7 @@ export const TransacaoController = {
       const result = await TransacaoBusiness.extrato(limit, mes, ano, userid);
       res.json(result);
     } catch (erro){
-      res.status(404).json({ erro: error.message });
+      res.status(404).json({ erro: erro.message });
     }
   }
 };

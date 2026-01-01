@@ -323,6 +323,6 @@ export const TransacaoRepository = {
              limit ${limit}`;
 
     const result = await pool.query(query, params);
-    return resujlt.rows;
+    return result.rows;
   }
 };
