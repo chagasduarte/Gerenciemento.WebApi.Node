@@ -319,7 +319,8 @@ export const TransacaoRepository = {
       params.push(mes);
       query += ` AND extract(month from t.data) = $${params.length}`;
     }
-    query += `limit ${limit}`;
+    query += ` order by data desc
+             limit ${limit}`;
 
     const result = await pool.query(query, params);
     return resujlt.rows;
