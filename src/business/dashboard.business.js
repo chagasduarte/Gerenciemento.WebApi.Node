@@ -26,7 +26,7 @@ export const DashboardBusiness = {
     let receita_mensal_pendente = await TransacaoRepository.somaTransacoes('entrada', 'pendente', data_inicio, data_fim, userid);
 
     let gastos_cartao = 0;
-    let saldo_acumuldado = await DashboardRepository.getSaldoAcumulado(data_fim, userid);
+    let saldo_acumulado = await DashboardRepository.getSaldoAcumulado(data_fim, userid);
 
     // 🟦 Se houver cartões, buscar individualmente
     if (cartoes && cartoes.length > 0) {
@@ -54,7 +54,7 @@ export const DashboardBusiness = {
       receita_mensal,
       gastos_mensal_pendente,
       receita_mensal_pendente,
-      saldo_acumuldado,
+      saldo_acumulado,
       gastos_cartao,
       hasSome:
         saldo_atual > 0 ||
@@ -62,7 +62,7 @@ export const DashboardBusiness = {
         receita_mensal > 0 ||
         gastos_mensal_pendente > 0 ||
         receita_mensal_pendente > 0 ||
-        saldo_acumuldado > 0 ||
+        saldo_acumulado > 0 ||
         gastos_cartao > 0
     };
   },
