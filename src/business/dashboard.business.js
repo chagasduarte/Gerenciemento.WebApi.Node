@@ -43,7 +43,7 @@ export const DashboardBusiness = {
         gastos_mensal += Number(gastosDoCartao | 0);
 
         const saldoAcumuladoCartao = await DashboardRepository.getSaldoAcumulado(periodo.fim, userid, cartao.id);
-        saldo_acumuldado += Number(saldoAcumuladoCartao);
+        saldo_acumulado += Number(saldoAcumuladoCartao);
       }
     }
 
