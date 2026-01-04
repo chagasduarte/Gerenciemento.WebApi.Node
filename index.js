@@ -8,7 +8,7 @@ import cartaoRoutes from './src/routes/cartao.router.js';
 import { autentication } from './src/middlewares/autentication.js';
 import categoriaRoutes from "./src/routes/categoria.routes.js";
 import subcategoriaRoutes from "./src/routes/subcategoria.routes.js";
-
+import planejamentoRoutes from "./src/routes/planejamento.routes.js"
 import home from './pages/home.js';
 
 import path from 'path';
@@ -52,6 +52,7 @@ app.use('/cartao', await autentication, cartaoRoutes);
 app.use('/user', userRouter);
 app.use("/categorias", categoriaRoutes);
 app.use("/subcategorias", subcategoriaRoutes);
+app.use("/planejamento", await autentication, planejamentoRoutes);
 
 // Iniciar o servidor
 app.listen(PORT, () => {
