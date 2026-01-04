@@ -4,7 +4,7 @@ export const PlanejamentoController = {
 
   async criar(req, res) {
     try {
-      const userid = req.user.id;
+      const userid = req.usuarioId;
       const planejamento = await PlanejamentoBusiness.criar(req.body, userid);
       return res.status(201).json(planejamento);
     } catch (error) {
@@ -15,7 +15,7 @@ export const PlanejamentoController = {
   async atualizar(req, res) {
     try {
       const { id } = req.params;
-      const userid = req.user.id;
+      const userid = req.usuarioId;
 
       const planejamento = await PlanejamentoBusiness.atualizar(
         id,
@@ -32,7 +32,7 @@ export const PlanejamentoController = {
   async deletar(req, res) {
     try {
       const { id } = req.params;
-      const userid = req.user.id;
+      const userid = req.usuarioId;
 
       await PlanejamentoBusiness.deletar(id, userid);
       return res.status(204).send();
@@ -43,7 +43,7 @@ export const PlanejamentoController = {
 
   async listar(req, res) {
     try {
-      const userid = req.user.id;
+      const userid = req.usuarioId;
       const planejamentos = await PlanejamentoBusiness.listar(userid);
       return res.json(planejamentos);
     } catch (error) {
@@ -54,7 +54,7 @@ export const PlanejamentoController = {
   async buscar(req, res) {
     try {
       const { id } = req.params;
-      const userid = req.user.id;
+      const userid = req.usuarioId;
 
       const planejamento = await PlanejamentoBusiness.buscar(id, userid);
       return res.json(planejamento);
