@@ -3,30 +3,32 @@ import { pool } from "../config/database.js";
 export const PlanejamentoRepository = {
 
   async criar(planejamento, userid) {
-    const { categoria, subcategoria, valor, tipo } = planejamento;
+    const { categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid } = planejamento;
 
     const result = await pool.query(
-      `INSERT INTO planejamento (categoria, subcategoria, valor, tipo, userid)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO planejamento (categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, userid)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [categoria, subcategoria, valor, tipo, userid]
+      [categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, userid]
     );
 
     return result.rows[0];
   },
 
   async atualizar(id, planejamento, userid) {
-    const { categoria, subcategoria, valor, tipo } = planejamento;
+    const { categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid } = planejamento;
 
     const result = await pool.query(
       `UPDATE planejamento
          SET categoria = $1,
              subcategoria = $2,
              valor = $3,
-             tipo = $4
-       WHERE id = $5 AND userid = $6
+             tipo = $4,
+             categoriaid = $5,
+             subcategoriaid = $6
+       WHERE id = $7 AND userid = $8
        RETURNING *`,
-      [categoria, subcategoria, valor, tipo, id, userid]
+      [categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, id, userid]
     );
 
     return result.rows[0];
