@@ -3,13 +3,13 @@ import { pool } from "../config/database.js";
 export const PlanejamentoRepository = {
 
   async criar(planejamento, userid) {
-    const { categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid } = planejamento;
+    const { categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, data } = planejamento;
 
     const result = await pool.query(
-      `INSERT INTO planejamento (categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, userid)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO planejamento (categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, data, userid)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, userid]
+      [categoria, subcategoria, valor, tipo, categoriaid, subcategoriaid, data, userid]
     );
 
     return result.rows[0];

@@ -3,7 +3,7 @@ import { PlanejamentoRepository } from "../repositories/planejamento.repository.
 export const PlanejamentoBusiness = {
 
   async criar(dados, userid) {
-    if (!dados.categoria || !dados.valor || !dados.tipo) {
+    if (!dados.categoriaid || !dados.valor || !dados.tipo) {
       throw new Error("Campos obrigatórios não informados");
     }
 
