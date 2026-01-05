@@ -183,8 +183,10 @@ export const TransacaoRepository = {
     let query = 
       `SELECT 
         sum(valor) as total_tipo, 
-        cast(categoria as integer) as categoria
+        cast(categoria as integer) as categoria,
+        s.idcategoria
       FROM public.transacoes t
+      inner join subcategoria s on t.categoria = s.id
       where t.tipo = 'saida'
         and data between $1 and $2
         AND userid = $3
@@ -197,7 +199,7 @@ export const TransacaoRepository = {
       query += ` AND cartaoid is null`
     }
     query +=  
-     ` group by t.categoria
+     ` group by t.categoria, sidcategoria
       order by t.categoria;`;
       
     const result = await pool.query(query, [inicio, fim, userid]);
