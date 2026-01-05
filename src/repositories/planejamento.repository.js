@@ -73,25 +73,25 @@ export const PlanejamentoRepository = {
 
     if (id){
       params.push(id);
-      query += ` AND id = ${params.length}`
+      query += ` AND id = $${params.length}`
     }
     if (tipo){
       params.push(tipo);
-      query += ` AND tipo = ${params.length}`
+      query += ` AND tipo = $${params.length}`
     }
     if (categoriaid){
       params.push(categoriaid);
-      query += ` AND categoriaid = ${params.length}`
+      query += ` AND categoriaid = $${params.length}`
     }
     if (subcategoriaid){
       params.push(subcategoriaid);
-      query += ` AND subcategoriaid = ${params.length}`
+      query += ` AND subcategoriaid = $${params.length}`
     }
 
-
+ 
     params.push(userid);
-    query += ` AND userid = ${params.length}`;
-    
+    query += ` AND userid = $${params.length}`;
+
     const result = await pool.query(query, params);
 
     return result.rows[0];

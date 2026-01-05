@@ -7,13 +7,16 @@ export const PlanejamentoBusiness = {
       throw new Error("Campos obrigatórios não informados");
     }
 
-    let plan = PlanejamentoRepository.buscar(null, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
+    let plan = await PlanejamentoRepository.buscar(null, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
     if(plan) {
-      plan.valor += dados.valor;
-      return PlanejamentoRepository.atualizar(plan.id, plan, userid);
+      console.log(plan)
+      plan.valor = Number(plan.valor) + Number(dados.valor);
+      console.log(plan)
+
+      return await PlanejamentoRepository.atualizar(plan.id, plan, userid);
     }
     else {
-      return PlanejamentoRepository.criar(dados, userid);
+      return  await PlanejamentoRepository.criar(dados, userid);
     }
   },
 
@@ -24,7 +27,7 @@ export const PlanejamentoBusiness = {
       throw new Error("Planejamento não encontrado");
     }
 
-    return PlanejamentoRepository.atualizar(id, dados, userid);
+    return await PlanejamentoRepository.atualizar(id, dados, userid);
   },
 
   async deletar(id, userid) {
