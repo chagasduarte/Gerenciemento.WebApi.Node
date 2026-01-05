@@ -188,7 +188,6 @@ export const TransacaoRepository = {
       where t.tipo = 'saida'
         and data between $1 and $2
         AND userid = $3
-        and t.status = 'pago'
         and t.categoria is not null`;
 
     if(cardid){
