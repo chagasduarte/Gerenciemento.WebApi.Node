@@ -184,7 +184,7 @@ export const TransacaoRepository = {
       `SELECT 
         sum(valor) as total_tipo, 
         cast(categoria as integer) as categoria,
-        s.idcategoria
+        s.idcategoria as idcategoria
       FROM public.transacoes t
       inner join subcategoria s on t.categoria = s.id
       where t.tipo = 'saida'

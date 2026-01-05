@@ -326,7 +326,6 @@ export const TransacaoBusiness = {
     let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
 
     const agrupamento = await TransacaoRepository.agrupamentoTipo(data_inicio, data_fim, userid);
-    
     let array = [];
     array.push(...agrupamento);
 

@@ -1,25 +1,42 @@
 export function unirAgrupamentos(semCartao, comCartao) {
   const mapa = new Map();
 
-  // Adiciona agrupamentos sem cartão
+  // Sem cartão
   semCartao.forEach(item => {
     const categoria = item.categoria;
     const valor = Number(item.total_tipo);
+    const idcategoria = Number(item.idcategoria);
 
-    mapa.set(categoria, (mapa.get(categoria) || 0) + valor);
+    if (!mapa.has(categoria)) {
+      mapa.set(categoria, {
+        total: valor,
+        idcategoria
+      });
+    } else {
+      mapa.get(categoria).total += valor;
+    }
   });
 
-  // Soma agrupamentos com cartão
+  // Com cartão
   comCartao.forEach(item => {
     const categoria = item.categoria;
     const valor = Number(item.total_tipo);
+    const idcategoria = Number(item.idcategoria);
 
-    mapa.set(categoria, (mapa.get(categoria) || 0) + valor);
+    if (!mapa.has(categoria)) {
+      mapa.set(categoria, {
+        total: valor,
+        idcategoria
+      });
+    } else {
+      mapa.get(categoria).total += valor;
+    }
   });
 
-  // Converte de volta para array no formato original
-  return Array.from(mapa.entries()).map(([categoria, valor]) => ({
+  // Converte para array
+  return Array.from(mapa.entries()).map(([categoria, data]) => ({
     categoria,
-    total_tipo: valor.toFixed(2)
+    total_tipo: data.total.toFixed(2),
+    idcategoria: data.idcategoria
   }));
 }
