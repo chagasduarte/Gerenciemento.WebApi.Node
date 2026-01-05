@@ -316,7 +316,7 @@ export const TransacaoBusiness = {
     return { parcelas: array, mensal };
   },
 
-  async agrupamentoTipo(mes, ano, userid) {
+  async agrupamentoTipo(mes, ano, tipo = null, userid) {
 
     const cartoes = await CartaoRepository.listar(userid);
     
@@ -325,7 +325,7 @@ export const TransacaoBusiness = {
     const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
     let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
 
-    const agrupamento = await TransacaoRepository.agrupamentoTipo(data_inicio, data_fim, userid);
+    const agrupamento = await TransacaoRepository.agrupamentoTipo(data_inicio, data_fim, userid, null, tipo);
     let array = [];
     array.push(...agrupamento);
 
@@ -333,7 +333,7 @@ export const TransacaoBusiness = {
       for (const cartao of cartoes) {
         const diaFatura = cartao.dia_fatura;
         const periodo = getPeriodoFatura(diaFatura, mes, ano);
-        const parcelasCartao = await TransacaoRepository.agrupamentoTipo(periodo.inicio, periodo.fim, userid, cartao.id);
+        const parcelasCartao = await TransacaoRepository.agrupamentoTipo(periodo.inicio, periodo.fim, userid, cartao.id, tipo);
         array = unirAgrupamentos(array, parcelasCartao);
       }
     }

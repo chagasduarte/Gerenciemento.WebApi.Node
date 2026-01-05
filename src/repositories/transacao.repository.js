@@ -179,7 +179,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async agrupamentoTipo(inicio, fim, userid, cardid = null) {
+  async agrupamentoTipo(inicio, fim, userid, cardid = null, tipo = null) {
     let query = 
       `SELECT 
         sum(valor) as total_tipo, 
@@ -191,7 +191,9 @@ export const TransacaoRepository = {
         and data between $1 and $2
         AND userid = $3
         and t.categoria is not null`;
-
+    if(tipo) {
+      query += ` AND tipo = ${tipo}`;
+    }
     if(cardid){
       query += ` AND cartaoid = ${cardid}`
     }
