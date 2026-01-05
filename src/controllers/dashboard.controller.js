@@ -7,10 +7,7 @@ export const DashboardController = {
       const userid = req.usuarioId;
 
       const dados = await DashboardBusiness.calcularResumoFinanceiro(mes, ano, userid);
-      if(dados.hasSome)
-        res.json(dados);
-      else 
-        res.status(405).json({ error: "Usuário ainda não preencheu nenhuma informação", dados })
+      res.json(dados);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Erro ao obter dados do dashboard" });
