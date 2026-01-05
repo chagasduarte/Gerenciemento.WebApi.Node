@@ -58,6 +58,7 @@ export const PlanejamentoBusiness = {
       if (!categoriaObj) {
         categoriaObj = {
           categoria: row.categoria,
+          categoriaid: row.categoriaid,
           soma: 0,
           planejamento: []
         };
