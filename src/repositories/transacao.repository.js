@@ -199,7 +199,7 @@ export const TransacaoRepository = {
       query += ` AND cartaoid is null`
     }
     query +=  
-     ` group by t.categoria, sidcategoria
+     ` group by t.categoria, s.idcategoria
       order by t.categoria;`;
       
     const result = await pool.query(query, [inicio, fim, userid]);
