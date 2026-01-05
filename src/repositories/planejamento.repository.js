@@ -65,16 +65,36 @@ export const PlanejamentoRepository = {
     return result.rows;
   },
 
-  async buscar(id, userid) {
-    const result = await pool.query(
-      `SELECT *
-         FROM planejamento
-        WHERE id = $1 AND userid = $2`,
-      [id, userid]
-    );
+  async buscar(id = null, tipo = null, categoriaid = null, subcategoriaid = null, userid) {
+    const params = [];
+    let query = 
+    `SELECT * FROM planejamento
+     WHERE 1 = 1`;
+
+    if (id){
+      params.push(id);
+      query += ` AND id = ${params.length}`
+    }
+    if (tipo){
+      params.push(tipo);
+      query += ` AND tipo = ${params.length}`
+    }
+    if (categoriaid){
+      params.push(categoriaid);
+      query += ` AND categoriaid = ${params.length}`
+    }
+    if (subcategoriaid){
+      params.push(subcategoriaid);
+      query += ` AND subcategoriaid = ${params.length}`
+    }
+
+
+    params.push(userid);
+    query += ` AND userid = ${params.length}`;
+    
+    const result = await pool.query(query, params);
 
     return result.rows[0];
   }
-
 
 };

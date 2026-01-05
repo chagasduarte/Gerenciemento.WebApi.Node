@@ -7,7 +7,14 @@ export const PlanejamentoBusiness = {
       throw new Error("Campos obrigatórios não informados");
     }
 
-    return PlanejamentoRepository.criar(dados, userid);
+    let plan = PlanejamentoRepository.buscar(null, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
+    if(plan) {
+      plan.valor += dados.valor;
+      return PlanejamentoRepository.atualizar(plan.id, plan, userid);
+    }
+    else {
+      return PlanejamentoRepository.criar(dados, userid);
+    }
   },
 
   async atualizar(id, dados, userid) {
