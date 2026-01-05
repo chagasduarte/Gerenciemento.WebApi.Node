@@ -31,7 +31,43 @@ export const PlanejamentoBusiness = {
   },
 
   async listar(userid) {
-    return PlanejamentoRepository.listar(userid);
+    const rows = await PlanejamentoRepository.listarComCategoria(userid);
+
+    const resultado = [];
+
+    for (const row of rows) {
+
+      // 🔹 Tipo
+      let tipoObj = resultado.find(t => t.tipo === row.tipo);
+      if (!tipoObj) {
+        tipoObj = {
+          tipo: row.tipo,
+          soma: 0,
+          agrupamentoTipo: []
+        };
+        resultado.push(tipoObj);
+      }
+
+      tipoObj.soma += Number(row.valor);
+
+      // 🔹 Categoria dentro do tipo
+      let categoriaObj = tipoObj.agrupamentoTipo.find(
+        c => c.categoria === row.categoria
+      );
+
+      if (!categoriaObj) {
+        categoriaObj = {
+          categoria: row.categoria,
+          soma: 0,
+          planejamento: []
+        };
+        tipoObj.agrupamentoTipo.push(categoriaObj);
+      }
+
+      categoriaObj.soma += Number(row.valor);
+      categoriaObj.planejamento.push(row);
+    }
+    return resultado;
   },
 
   async buscar(id, userid) {

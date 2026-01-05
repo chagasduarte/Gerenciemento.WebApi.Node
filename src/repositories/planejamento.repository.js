@@ -50,6 +50,17 @@ export const PlanejamentoRepository = {
         ORDER BY id DESC`,
       [userid]
     );
+    
+
+    return result.rows;
+  },
+  async listarComCategoria(userid) {
+    const result = await pool.query(`
+        SELECT
+        *
+        FROM planejamento p
+        WHERE p.userid = $1
+    `, [userid]);
 
     return result.rows;
   },
@@ -64,5 +75,6 @@ export const PlanejamentoRepository = {
 
     return result.rows[0];
   }
+
 
 };
