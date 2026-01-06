@@ -7,11 +7,10 @@ export const PlanejamentoBusiness = {
       throw new Error("Campos obrigatórios não informados");
     }
 
-    let plan = await PlanejamentoRepository.buscar(null, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
+    let planejados = await PlanejamentoRepository.buscar(dados.mes, dados.ano, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
+    let plan = planejados[0];
     if(plan) {
-      console.log(plan)
       plan.valor = Number(plan.valor) + Number(dados.valor);
-      console.log(plan)
 
       return await PlanejamentoRepository.atualizar(plan.id, plan, userid);
     }
@@ -40,9 +39,8 @@ export const PlanejamentoBusiness = {
     await PlanejamentoRepository.deletar(id, userid);
   },
 
-  async listar(userid) {
-    const rows = await PlanejamentoRepository.listarComCategoria(userid);
-
+  async listar(mes, ano, userid) {
+    const rows = await PlanejamentoRepository.buscar(mes, ano, null, null, null, null, userid);
     const resultado = [];
 
     for (const row of rows) {

@@ -44,7 +44,9 @@ export const PlanejamentoController = {
   async listar(req, res) {
     try {
       const userid = req.usuarioId;
-      const planejamentos = await PlanejamentoBusiness.listar(userid);
+      const { mes, ano } = req.query;
+
+      const planejamentos = await PlanejamentoBusiness.listar(mes, ano, userid);
       return res.json(planejamentos);
     } catch (error) {
       return res.status(500).json({ erro: error.message });

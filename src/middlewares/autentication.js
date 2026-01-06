@@ -7,7 +7,6 @@ export async function autentication(req, res, next) {
   if (!authHeader) {
     return res.status(401).json({ erro: 'Token não informado' });
   }
-  console.log("autenticou")
   const token = authHeader.split(' ')[1];
 
   if (!token) {

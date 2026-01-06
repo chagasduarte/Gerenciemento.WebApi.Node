@@ -201,7 +201,6 @@ export const TransacaoBusiness = {
       data_inicio = periodo.inicio;
       data_fim = periodo.fim;
     }
-    console.log(data_inicio, data_fim)
     let parceladas = await TransacaoRepository.listaParceladas(data_inicio, data_fim, userid, cardId);
     let adicionais = await TransacaoRepository.listaAdicionais(data_inicio, data_fim, userid, cardId);
     let pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', data_inicio, data_fim, userid, cardId);

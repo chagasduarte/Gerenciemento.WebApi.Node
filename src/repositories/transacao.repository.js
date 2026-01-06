@@ -188,9 +188,7 @@ export const TransacaoRepository = {
       FROM public.transacoes t
       inner join subcategoria s on t.categoria = s.id
       where data between $1 and $2
-        AND userid = $3
-        and status = 'pendente'
-        and t.categoria is not null`;
+        AND userid = $3`;
     if(tipo) {
       query += ` AND tipo = '${tipo}'`;
     }
@@ -209,7 +207,6 @@ export const TransacaoRepository = {
     query +=  
      ` group by t.categoria, s.idcategoria
       order by t.categoria;`;
-      
     const result = await pool.query(query, [inicio, fim, userid]);
     return result.rows;
   },
@@ -292,7 +289,6 @@ export const TransacaoRepository = {
                       total_parcelas ASC,                 
                       MAX(data) ASC;`;
     const result = await pool.query(query, [ano, userid]);
-    console.log(ano, userid)
     return result.rows;
   },
 

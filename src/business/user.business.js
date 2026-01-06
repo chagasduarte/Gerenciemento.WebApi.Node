@@ -29,7 +29,6 @@ export const UserBusiness = {
   async uploadAvatar(userid, file) {
     if(!file) throw new Error("Arquivo não recebido");
     const avatar = await UsuarioRepository.buscaAvatar(userid).avatar;
-    console.log(avatar)
     if(avatar != null) {
       const oldPath = path.join(__dirname, '..', '..', 'public', avatar);
       if (fs.existsSync(oldPath)) {
@@ -37,7 +36,6 @@ export const UserBusiness = {
       }
     }
     const filePath = `uploads/${file.filename}`;
-    console.log(file, userid, filePath)
     const userUpdated = await UsuarioRepository.update(userid, filePath);
     if(!userUpdated) throw new Error("Usuário não encontrado");
 

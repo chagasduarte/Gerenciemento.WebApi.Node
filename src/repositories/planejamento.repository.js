@@ -65,12 +65,23 @@ export const PlanejamentoRepository = {
     return result.rows;
   },
 
-  async buscar(id = null, tipo = null, categoriaid = null, subcategoriaid = null, userid) {
+  async buscar(mes, ano, id = null, tipo = null, categoriaid = null, subcategoriaid = null, userid) {
     const params = [];
     let query = 
     `SELECT * FROM planejamento
      WHERE 1 = 1`;
+    
 
+    if(mes){
+      params.push(mes)
+      query += ` AND extract(month from data) = $${params.length}`;
+    }
+    if(ano) {
+      params.push(ano);
+      query += ` AND extract(year from data) = $${params.length}`;
+
+    }
+    
     if (id){
       params.push(id);
       query += ` AND id = $${params.length}`
@@ -94,7 +105,7 @@ export const PlanejamentoRepository = {
 
     const result = await pool.query(query, params);
 
-    return result.rows[0];
+    return result.rows;
   }
 
 };
