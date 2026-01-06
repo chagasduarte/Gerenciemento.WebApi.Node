@@ -104,13 +104,13 @@ export const TransacaoController = {
   async agrupamentoTipo(req, res) {
     try {
       // Recebe filtros via query string
-      const { mes, ano, tipo } = req.query;
+      const { mes, ano, tipo, status } = req.query;
       const userid = req.usuarioId;
 
       // Converte mês/ano para números
       const mesNum = mes ? parseInt(mes) : null;
       const anoNum = ano ? parseInt(ano) : null;
-      const agrupamentoTipo = await TransacaoBusiness.agrupamentoTipo(mesNum, anoNum, tipo, userid);
+      const agrupamentoTipo = await TransacaoBusiness.agrupamentoTipo(status, mesNum, anoNum, tipo, userid);
       res.json(agrupamentoTipo);
     } catch (error) {
       res.status(404).json({ erro: error.message });

@@ -179,7 +179,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async agrupamentoTipo(inicio, fim, userid, cardid = null, tipo = null) {
+  async agrupamentoTipo(status = null, inicio, fim, userid, cardid = null, tipo = null) {
     let query = 
       `SELECT 
         sum(valor) as total_tipo, 
@@ -194,12 +194,18 @@ export const TransacaoRepository = {
     if(tipo) {
       query += ` AND tipo = '${tipo}'`;
     }
+    
+    if(status) {
+      query += ` AND status = ${status}`;
+    }
+
     if(cardid){
       query += ` AND cartaoid = ${cardid}`
     }
     else {
       query += ` AND cartaoid is null`
     }
+
     query +=  
      ` group by t.categoria, s.idcategoria
       order by t.categoria;`;
