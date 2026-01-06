@@ -189,6 +189,7 @@ export const TransacaoRepository = {
       inner join subcategoria s on t.categoria = s.id
       where data between $1 and $2
         AND userid = $3
+        and status = 'pendente'
         and t.categoria is not null`;
     if(tipo) {
       query += ` AND tipo = '${tipo}'`;

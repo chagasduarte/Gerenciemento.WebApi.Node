@@ -11,7 +11,8 @@ export const DashboardRepository = {
               ELSE 0
             END) AS saldo_atual
       FROM transacoes
-      WHERE (
+      WHERE status = 'pago'
+        AND (
           EXTRACT(YEAR FROM data) < $2
           OR (EXTRACT(YEAR FROM data) = $2 
               AND EXTRACT(MONTH FROM data) <= $1)
