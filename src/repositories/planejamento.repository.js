@@ -102,9 +102,8 @@ export const PlanejamentoRepository = {
  
     params.push(userid);
     query += ` AND userid = $${params.length}`;
-
+    console.log(query, params)
     const result = await pool.query(query, params);
-
     return result.rows;
   }
 

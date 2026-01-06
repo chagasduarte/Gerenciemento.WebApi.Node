@@ -6,12 +6,15 @@ export const PlanejamentoBusiness = {
     if (!dados.categoriaid || !dados.valor || !dados.tipo) {
       throw new Error("Campos obrigatórios não informados");
     }
-
-    let planejados = await PlanejamentoRepository.buscar(dados.mes, dados.ano, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
+    const data = new Date(dados.data);
+    const mes = data.getMonth() + 1;
+    const ano = data.getFullYear();
+    console.log(mes, ano)
+    let planejados = await PlanejamentoRepository.buscar(mes, ano, null, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
     let plan = planejados[0];
+
     if(plan) {
       plan.valor = Number(plan.valor) + Number(dados.valor);
-
       return await PlanejamentoRepository.atualizar(plan.id, plan, userid);
     }
     else {
