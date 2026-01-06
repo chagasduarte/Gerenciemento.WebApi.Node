@@ -9,7 +9,6 @@ export const PlanejamentoBusiness = {
     const data = new Date(dados.data);
     const mes = data.getMonth() + 1;
     const ano = data.getFullYear();
-    console.log(mes, ano)
     let planejados = await PlanejamentoRepository.buscar(mes, ano, null, dados.tipo, dados.categoriaid, dados.subcategoriaid, userid);
     let plan = planejados[0];
 
