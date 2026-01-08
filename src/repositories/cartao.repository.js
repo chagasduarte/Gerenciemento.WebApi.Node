@@ -14,14 +14,14 @@ export const CartaoRepository = {
   async listar(userid) {
     const result = await pool.query(`
         SELECT * FROM cartoes where userid = $1
-        `, [25]);
+        `, [userid]);
 
     return result.rows;
   },
   async buscar(cartaoid) {
     const result = await pool.query(`
         SELECT * FROM cartoes where id = $1
-        `, [25]);
+        `, [cartaoid]);
 
     return result.rows[0];
   }
