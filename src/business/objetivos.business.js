@@ -1,7 +1,7 @@
 import { ObjetivosRepository } from "../repositories/objetivos.repository.js";
 
 
-export const CartaoBusiness = {
+export const ObjetivosBusiness = {
     async criar (objetivo, userid){
         return await ObjetivosRepository.criar(cartao,userid);
     },
