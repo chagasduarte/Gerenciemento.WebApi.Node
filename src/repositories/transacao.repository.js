@@ -314,15 +314,14 @@ export const TransacaoRepository = {
 
     params.push(userid);
     query += ` AND t.userid = $${params.length}`;
-
     if (ano) {
       params.push(ano);
-      query += ` AND extract(year from t.data) = $${params.length}`;
+      query += ` AND $${params.length} = case when cartaoid is not null then extract(year from pagamento) else extract(year from t.data) end `;
     }
 
     if (mes) {
       params.push(mes);
-      query += ` AND extract(month from t.data) = $${params.length}`;
+      query += ` AND $${params.length} = case when cartaoid is not null then extract(month from pagamento) else extract(month from t.data) end `;
     }
     
     query += ` order by data desc`;
