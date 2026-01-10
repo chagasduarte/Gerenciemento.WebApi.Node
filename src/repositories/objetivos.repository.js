@@ -29,7 +29,7 @@ export const ObjetivosRepository = {
   },
   async listar(userid) {
     const result = await pool.query(`
-        SELECT * FROM objetivos where userid = $1
+        SELECT * FROM objetivos where usuario_id = $1
         `, [userid]);
 
     return result.rows;
