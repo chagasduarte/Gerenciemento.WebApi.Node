@@ -306,7 +306,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
   async extrato(limit, mes, ano, userid){
-    let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status
+    let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, cartaoid
                 FROM transacoes t
                 WHERE 1=1`;
 
