@@ -41,6 +41,17 @@ export const PlanejamentoController = {
     }
   },
 
+  async listarAgrupado(req, res) {
+    try {
+      const userid = req.usuarioId;
+      const { mes, ano } = req.query;
+
+      const planejamentos = await PlanejamentoBusiness.listarAgrupado(mes, ano, userid);
+      return res.json(planejamentos);
+    } catch (error) {
+      return res.status(500).json({ erro: error.message });
+    }
+  },
   async listar(req, res) {
     try {
       const userid = req.usuarioId;
@@ -52,7 +63,6 @@ export const PlanejamentoController = {
       return res.status(500).json({ erro: error.message });
     }
   },
-
   async buscar(req, res) {
     try {
       const { id } = req.params;

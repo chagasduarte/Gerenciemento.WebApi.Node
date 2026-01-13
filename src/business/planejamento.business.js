@@ -41,7 +41,7 @@ export const PlanejamentoBusiness = {
     await PlanejamentoRepository.deletar(id, userid);
   },
 
-  async listar(mes, ano, userid) {
+  async listarAgrupado(mes, ano, userid) {
     const rows = await PlanejamentoRepository.buscar(mes, ano, null, null, null, null, userid);
     const resultado = [];
 
@@ -80,7 +80,9 @@ export const PlanejamentoBusiness = {
     }
     return resultado;
   },
-
+  async listar(mes, ano, userid) {
+    return await PlanejamentoRepository.buscar(mes, ano, null, null, null, null, userid);
+  },
   async buscar(id, userid) {
     const planejamento = await PlanejamentoRepository.buscar(id, userid);
 
