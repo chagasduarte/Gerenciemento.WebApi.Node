@@ -140,7 +140,7 @@ export const TransacaoRepository = {
                     SUM(
                       CASE 
                         WHEN status = 'pendente'
-                          AND data between $1 and $2
+                          AND pagamento between $1 and $2
                         THEN valor 
                         ELSE 0 
                       END
@@ -150,7 +150,7 @@ export const TransacaoRepository = {
                       WHEN SUM(
                         CASE 
                           WHEN status = 'pendente'
-                            AND data between $1 and $2
+                            AND pagamento between $1 and $2
                           THEN 1 
                           ELSE 0 
                         END
@@ -162,7 +162,7 @@ export const TransacaoRepository = {
                   WHERE tipo = 'saida'
                     AND descricao ILIKE '%- Parcela'
                     AND descricao in (select descricao from transacoes d where  
-                                              data between $1 and $2
+                                              pagamento between $1 and $2
                                               AND descricao ILIKE '%- Parcela' 
                                               and tipo = 'saida')
                     AND userid = $3`;
@@ -187,7 +187,7 @@ export const TransacaoRepository = {
         s.idcategoria as idcategoria
       FROM public.transacoes t
       inner join subcategoria s on t.categoria = s.id
-      where data between $1 and $2
+      where pagamento between $1 and $2
         AND userid = $3`;
     if(tipo) {
       query += ` AND tipo = '${tipo}'`;
@@ -220,7 +220,7 @@ export const TransacaoRepository = {
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
-                AND t."data"::date BETWEEN $1 AND $2
+                AND t."pagamento"::date BETWEEN $1 AND $2
                 and descricao like '%Parcela'
                 AND userid = $3 `;
 
@@ -245,7 +245,7 @@ export const TransacaoRepository = {
               FROM public.transacoes t
               where t.tipo = 'saida'
                 and t.status = 'pendente'
-                AND t."data"::date BETWEEN $1 AND $2
+                AND t."pagamento"::date BETWEEN $1 AND $2
                 and descricao not like '%Parcela'
                 AND userid = $3 `;
     if(cardId){
@@ -275,19 +275,19 @@ export const TransacaoRepository = {
   async linhaTemporal(ano, userid) {
     const query = `SELECT 
                       COUNT(*) AS total_parcelas, 
-                      MAX(data) AS data_fim, 
-                      MIN(data) AS data_inicio,
+                      MAX(pagamento) AS data_fim, 
+                      MIN(pagamento) AS data_inicio,
                       descricao 
                   FROM transacoes t 	
-                  WHERE EXTRACT(YEAR FROM data) = $1
+                  WHERE EXTRACT(YEAR FROM pagamento) = $1
                     AND t.userid = $2
                     AND t.descricao LIKE '%- Parcela'
                   GROUP BY descricao
                   ORDER BY 
-                      EXTRACT(YEAR FROM MIN(data)) ASC,   
-                      EXTRACT(MONTH FROM MIN(data)) ASC,  
+                      EXTRACT(YEAR FROM MIN(pagamento)) ASC,   
+                      EXTRACT(MONTH FROM MIN(pagamento)) ASC,  
                       total_parcelas ASC,                 
-                      MAX(data) ASC;`;
+                      MAX(pagamento) ASC;`;
     const result = await pool.query(query, [ano, userid]);
     return result.rows;
   },
@@ -297,9 +297,9 @@ export const TransacaoRepository = {
                     FROM public.transacoes t
                     where t.tipo = 'saida'
                       and t.status = 'pendente'
-                      and EXTRACT(DAY FROM data) = $1
-                      and EXTRACT(MONTH FROM data) = $2
-                      and EXTRACT(YEAR FROM data) = $3
+                      and EXTRACT(DAY FROM pagamento) = $1
+                      and EXTRACT(MONTH FROM pagamento) = $2
+                      and EXTRACT(YEAR FROM pagamento) = $3
                       and ispaycart = true
                       AND userid = $4`;
     const result = await pool.query(query, [dia, mes, ano, userid]);
@@ -324,7 +324,7 @@ export const TransacaoRepository = {
       query += ` AND $${params.length} = case when cartaoid is not null then extract(month from pagamento) else extract(month from t.data) end `;
     }
     
-    query += ` order by data desc`;
+    query += ` order by pagamento desc`;
     if(limit && limit > 0) {
       query += ` limit ${limit}`;
     }       
