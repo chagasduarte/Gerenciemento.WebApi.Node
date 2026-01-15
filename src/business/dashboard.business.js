@@ -20,10 +20,10 @@ export const DashboardBusiness = {
     const saldo_atual = await DashboardRepository.getSaldoAtual(mesAtual, anoAtual, userid);
 
     // 🟦 RESULTADOS INICIAIS (SEM CARTÃO)
-    let gastos_mensal = await TransacaoRepository.somaTransacoes('saida', '', data_inicio, data_fim, userid);
-    let receita_mensal = await TransacaoRepository.somaTransacoes('entrada', '', data_inicio, data_fim, userid);
-    let gastos_mensal_pendente = await TransacaoRepository.somaTransacoes('saida', 'pendente', data_inicio, data_fim, userid);
-    let receita_mensal_pendente = await TransacaoRepository.somaTransacoes('entrada', 'pendente', data_inicio, data_fim, userid);
+    let gastos_mensal = await TransacaoRepository.somaTransacoes('saida', '', mes, ano, userid);
+    let receita_mensal = await TransacaoRepository.somaTransacoes('entrada', '', mes, ano, userid);
+    let gastos_mensal_pendente = await TransacaoRepository.somaTransacoes('saida', 'pendente', mes, ano, userid);
+    let receita_mensal_pendente = await TransacaoRepository.somaTransacoes('entrada', 'pendente', mes, ano, userid);
 
     let gastos_cartao = 0;
     let saldo_acumulado = await DashboardRepository.getSaldoAcumulado(data_fim, userid);
@@ -34,16 +34,10 @@ export const DashboardBusiness = {
       for (const cartao of cartoes) {
         const diaFatura = cartao.dia_fatura;
         const periodo = getPeriodoFatura(diaFatura, mes, ano);
-        const gastosDoCartaoPendente = await TransacaoRepository.somaTransacoes('saida', 'pendente',periodo.inicio, periodo.fim, userid, cartao.id);
+        const gastosDoCartaoPendente = await TransacaoRepository.somaTransacoes('saida', 'pendente',mes, ano, userid, cartao.id);
         
         gastos_cartao += Number(gastosDoCartaoPendente | 0);
-        gastos_mensal_pendente += Number(gastosDoCartaoPendente | 0);
 
-        const gastosDoCartao = await TransacaoRepository.somaTransacoes('saida', '', periodo.inicio, periodo.fim, userid, cartao.id);
-        gastos_mensal += Number(gastosDoCartao | 0);
-
-        const saldoAcumuladoCartao = await DashboardRepository.getSaldoAcumulado(periodo.fim, userid, cartao.id);
-        saldo_acumulado += Number(saldoAcumuladoCartao);
       }
     }
 

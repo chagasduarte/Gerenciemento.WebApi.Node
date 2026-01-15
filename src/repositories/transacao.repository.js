@@ -77,7 +77,7 @@ export const TransacaoRepository = {
     const result = await pool.query(query, params);
     return result.rows;
   },
-  async somaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardid = null, so = null) {
+  async somaTransacoes(tipo = null, status = null, mes = null, ano = null, userid, cardid = null, so = null) {
 
     let query = `SELECT SUM(t.valor) AS soma
                 FROM transacoes t
@@ -103,29 +103,19 @@ export const TransacaoRepository = {
     }
 
     // Período de datas
-    if (inicio) {
-      params.push(inicio);
-      query += ` AND t.data >= $${params.length}`;
+    if (mes) {
+      params.push(mes);
+      query += ` AND extract(month from t.pagamento) = $${params.length}`;
     }
 
-    if (fim) {
-      params.push(fim);
-      query += ` AND t.data <= $${params.length}`;
+    if (ano) {
+      params.push(ano);
+      query += ` AND extract(year from t.pagamento) = $${params.length}`;
     }
 
-    // Filtro de cartão
-    if (cardid) {
-      params.push(cardid);
-      query += ` AND t.cartaoid = $${params.length}`;
-    } else {
-      // Buscar SOMENTE transações sem cartão
-      query += ` AND t.cartaoid IS NULL`;
-    }
-    if(so){
-      console.log(query)
-      console.log(params)
-    }
     const result = await pool.query(query, params);
+        console.log(query, params)
+
     return Number(result.rows[0].soma || 0);
   },
   async listaDespesasParceladas(inicio, fim, userid, cardid = null){

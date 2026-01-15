@@ -32,21 +32,14 @@ export const DashboardRepository = {
       ), 0) AS total
       FROM transacoes
       WHERE userid = $1
-        AND data <= $2
+        AND pagamento <= $2
     `;
-    if(cardid){
-      query += ` And cartaoid = ${cardid}`;
-    }
-    else {
-      query += ` And cartaoid is null`;
-    }
-
     const total = await pool.query(query, [
       userid,
       data_fim
     ]);
-  return Number(total.rows[0].total | 0)
-},
+    return Number(total.rows[0].total | 0)
+  },
   // saldo projetado por mês (considera todas as transações, pagas ou pendentes)
   async getProjecaoMensal(ano, userid, cartaoid = null) {
     let query = `
