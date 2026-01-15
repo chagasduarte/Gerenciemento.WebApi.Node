@@ -314,7 +314,7 @@ export const TransacaoRepository = {
       query += ` AND $${params.length} = case when cartaoid is not null then extract(month from pagamento) else extract(month from t.data) end `;
     }
     
-    query += ` order by pagamento desc`;
+    query += ` order by data desc`;
     if(limit && limit > 0) {
       query += ` limit ${limit}`;
     }       
