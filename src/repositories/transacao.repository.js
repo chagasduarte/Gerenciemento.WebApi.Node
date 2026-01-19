@@ -177,7 +177,7 @@ export const TransacaoRepository = {
         s.idcategoria as idcategoria
       FROM public.transacoes t
       inner join subcategoria s on t.categoria = s.id
-      where pagamento between $1 and $2
+      where case when cartaoid is not null then pagamento else data end between $1 and $2
         AND userid = $3`;
     if(tipo) {
       query += ` AND tipo = '${tipo}'`;
@@ -185,13 +185,6 @@ export const TransacaoRepository = {
     
     if(status) {
       query += ` AND status = ${status}`;
-    }
-
-    if(cardid){
-      query += ` AND cartaoid = ${cardid}`
-    }
-    else {
-      query += ` AND cartaoid is null`
     }
 
     query +=  

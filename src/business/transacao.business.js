@@ -328,15 +328,6 @@ export const TransacaoBusiness = {
     let array = [];
     array.push(...agrupamento);
 
-    if (cartoes && cartoes.length > 0) {
-      for (const cartao of cartoes) {
-        const diaFatura = cartao.dia_fatura;
-        const periodo = getPeriodoFatura(diaFatura, mes, ano);
-        const parcelasCartao = await TransacaoRepository.agrupamentoTipo(status, periodo.inicio, periodo.fim, userid, cartao.id, tipo);
-        array = unirAgrupamentos(array, parcelasCartao);
-      }
-    }
-
     const soma = array.reduce((acc, p) => ({
        soma: acc.soma + parseFloat(p.total_tipo)
     }), {soma: 0})
