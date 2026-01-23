@@ -169,7 +169,7 @@ export const TransacaoRepository = {
     return result.rows;
   },
 
-  async agrupamentoTipo(status = null, inicio, fim, userid, tipo = null) {
+  async agrupamentoTipo(status = null, inicio, fim, userid, cardid = null, tipo = null) {
     let query =
       `SELECT 
         sum(valor) as total_tipo, 
