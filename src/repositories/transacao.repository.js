@@ -34,7 +34,7 @@ export const TransacaoRepository = {
     return true;
   },
 
-  async listaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardId = null ) {
+  async listaTransacoes(tipo = null, status = null, inicio = null, fim = null, userid, cardId = null) {
     let query = 'SELECT * FROM transacoes WHERE 1=1';
     const params = [];
     // Filtrar por usuário
@@ -63,14 +63,14 @@ export const TransacaoRepository = {
       query += ` AND $${params.length}`;
     }
 
-    if(cardId){
+    if (cardId) {
       params.push(cardId);
       query += ` and cartaoid = $${params.length} `;
     }
     else {
       query += ` and cartaoid is null`
     }
-    
+
     // Ordenar por data crescente
     query += ' ORDER BY data ASC';
 
@@ -114,11 +114,11 @@ export const TransacaoRepository = {
     }
 
     const result = await pool.query(query, params);
-        console.log(query, params)
+    console.log(query, params)
 
     return Number(result.rows[0].soma || 0);
   },
-  async listaDespesasParceladas(inicio, fim, userid, cardid = null){
+  async listaDespesasParceladas(inicio, fim, userid, cardid = null) {
     let query = `SELECT
                     descricao, 
                     SUM(valor) AS total_parcelado,
@@ -156,7 +156,7 @@ export const TransacaoRepository = {
                                               AND descricao ILIKE '%- Parcela' 
                                               and tipo = 'saida')
                     AND userid = $3`;
-    if(cardid){
+    if (cardid) {
       query += ` AND cartaoid = ${cardid}`
     }
     else {
@@ -165,36 +165,34 @@ export const TransacaoRepository = {
 
     query += ` GROUP BY descricao
                ORDER BY descricao;`
-    const result = await pool.query(query,[inicio, fim, userid]);
-    return result.rows;
-  },
-
-  async agrupamentoTipo(status = null, inicio, fim, userid, cardid = null, tipo = null) {
-    let query = 
-      `SELECT 
-        sum(valor) as total_tipo, 
-        cast(categoria as integer) as categoria,
-        s.idcategoria as idcategoria
-      FROM public.transacoes t
-      inner join subcategoria s on t.categoria = s.id
-      where case when cartaoid is not null then pagamento else data end between $1 and $2
-        AND userid = $3`;
-    if(tipo) {
-      query += ` AND tipo = '${tipo}'`;
-    }
-    
-    if(status) {
-      query += ` AND status = ${status}`;
-    }
-
-    query +=  
-     ` group by t.categoria, s.idcategoria
-      order by t.categoria;`;
     const result = await pool.query(query, [inicio, fim, userid]);
     return result.rows;
   },
 
-  async listaParceladas( inicio, fim, userid, cardId = null) {
+  async agrupamentoTipo(status = null, inicio, fim, userid, tipo = null) {
+    let query =
+      `SELECT 
+        sum(valor) as total_tipo, 
+        idcategoria
+      FROM public.transacoes t
+      where case when cartaoid is not null then pagamento else data end between $1 and $2
+        AND userid = $3`;
+    if (tipo) {
+      query += ` AND tipo = '${tipo}'`;
+    }
+
+    if (status) {
+      query += ` AND status = ${status}`;
+    }
+
+    query +=
+      ` group by idcategoria
+      order by idcategoria;`;
+    const result = await pool.query(query, [inicio, fim, userid]);
+    return result.rows;
+  },
+
+  async listaParceladas(inicio, fim, userid, cardId = null) {
     const params = [];
     params.push(inicio);
     params.push(fim);
@@ -207,7 +205,7 @@ export const TransacaoRepository = {
                 and descricao like '%Parcela'
                 AND userid = $3 `;
 
-    if(cardId){
+    if (cardId) {
       params.push(cardId);
       query += `and cartaoid = $4 `;
     }
@@ -231,21 +229,21 @@ export const TransacaoRepository = {
                 AND t."pagamento"::date BETWEEN $1 AND $2
                 and descricao not like '%Parcela'
                 AND userid = $3 `;
-    if(cardId){
+    if (cardId) {
       params.push(cardId);
       query += `and cartaoid = $4 `;
     }
     else {
       query += `and ispaycart is false`
     }
-    
+
     const result = await pool.query(query, params);
     return result.rows;
   },
 
   async uptopago(id) {
     const query = `UPDATE transacoes set status = 'pago' where id = $1`;
-    const result  = await pool.query(query, [id]);
+    const result = await pool.query(query, [id]);
     return true;
   },
 
@@ -288,7 +286,7 @@ export const TransacaoRepository = {
     const result = await pool.query(query, [dia, mes, ano, userid]);
     return result.rows;
   },
-  async extrato(limit, mes, ano, userid){
+  async extrato(limit, mes, ano, userid) {
     let query = `SELECT id, descricao, tipo, valor, categoria, TO_CHAR(t."data"::date, 'YYYY-MM-DD') AS data, status, cartaoid
                 FROM transacoes t
                 WHERE 1=1`;
@@ -306,11 +304,11 @@ export const TransacaoRepository = {
       params.push(mes);
       query += ` AND $${params.length} = case when cartaoid is not null then extract(month from pagamento) else extract(month from t.data) end `;
     }
-    
+
     query += ` order by data desc`;
-    if(limit && limit > 0) {
+    if (limit && limit > 0) {
       query += ` limit ${limit}`;
-    }       
+    }
 
     const result = await pool.query(query, params);
     return result.rows;
