@@ -143,7 +143,7 @@ GROUP BY
                         cast(categoria as integer) categoria,
                         sum(valor) AS media_mensal
                     FROM transacoes
-                    where EXTRACT(YEAR FROM data) = $1 and tipo = 'saida' AND userid = $2
+                    where EXTRACT(YEAR FROM case when cartaoid is null then data else pagamento end) = $1 and tipo = 'saida' AND userid = $2
                     GROUP BY categoria
                     ORDER BY categoria;
                     `;
@@ -152,7 +152,7 @@ GROUP BY
   },
 
   // opcional: transações filtradas por tipo e status
-  async getTransacoes( tipo = null, status = null ) {
+  async getTransacoes(tipo = null, status = null) {
     let query = 'SELECT * FROM transacoes WHERE 1=1';
     const params = [];
     if (tipo) {
