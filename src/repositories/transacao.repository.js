@@ -173,7 +173,7 @@ export const TransacaoRepository = {
     let query =
       `SELECT 
         sum(valor) as total_tipo, 
-        idcategoria
+        idcategoria, categoria as subcategoria
       FROM public.transacoes t
       where case when cartaoid is not null then pagamento else data end between $1 and $2
         AND userid = $3`;
@@ -186,7 +186,7 @@ export const TransacaoRepository = {
     }
 
     query +=
-      ` group by idcategoria
+      ` group by idcategoria, categoria
       order by idcategoria;`;
     const result = await pool.query(query, [inicio, fim, userid]);
     return result.rows;
