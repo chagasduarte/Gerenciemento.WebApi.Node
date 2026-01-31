@@ -15,7 +15,7 @@ export const TransacaoBusiness = {
     }
     return await TransacaoRepository.criar(transacao, userid);
   },
-  
+
   async criarParcelada(payload, userId) {
     try {
       // --- Validações básicas ---
@@ -130,7 +130,7 @@ export const TransacaoBusiness = {
             tipo: "entrada",
             descricao: entrada.description || entrada.descricao || "Entrada fixa",
             valor: Math.abs(valorEntrada),    // garante valor positivo
-            categoria: null,                   // opcional
+            categoria: entrada.category || entrada.categoria || null,                   // opcional
             data: data,
             status: "pendente",
             ispaycart: false,
@@ -206,7 +206,7 @@ export const TransacaoBusiness = {
     let pagos = await TransacaoRepository.listaTransacoes('saida', 'pago', data_inicio, data_fim, userid, cardId);
 
 
-    if(!cardId && cartoes && cartoes.length > 0) {
+    if (!cardId && cartoes && cartoes.length > 0) {
       for (const cartao of cartoes) {
 
         const periodo = getPeriodoFatura(cartao.dia_fatura, mes, ano);
@@ -214,32 +214,32 @@ export const TransacaoBusiness = {
         const parceladasCartoes = await TransacaoRepository.listaParceladas(periodo.inicio, periodo.fim, userid, cartao.id);
         const adicionaisCartoes = await TransacaoRepository.listaAdicionais(periodo.inicio, periodo.fim, userid, cartao.id);
         const pagosCartoes = await TransacaoRepository.listaTransacoes('saida', 'pago', periodo.inicio, periodo.fim, userid, cartao.id);
-        
+
         parceladas.push(...parceladasCartoes);
         adicionais.push(...adicionaisCartoes);
         pagos.push(...pagosCartoes);
 
       }
-    } 
+    }
 
     const soma_parcelados = parceladas.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
-    }), { soma: 0  }).soma;
+    }), { soma: 0 }).soma;
 
     const soma_adicionais = adicionais.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
-    }), { soma: 0  }).soma;
+    }), { soma: 0 }).soma;
 
     const soma_pagos = pagos.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
-    }), { soma: 0  }).soma;
+    }), { soma: 0 }).soma;
 
     return {
       soma_parcelados,
       soma_adicionais,
       soma_pagos,
       parceladas,
-      adicionais, 
+      adicionais,
       pagos
     }
   },
@@ -251,14 +251,14 @@ export const TransacaoBusiness = {
 
     const entradas_receber = await TransacaoRepository.listaTransacoes('entrada', 'pendente', data_inicio, data_fim, userid);
     const entradas_recebidas = await TransacaoRepository.listaTransacoes('entrada', 'pago', data_inicio, data_fim, userid);
-    
+
     const soma_receber = entradas_receber.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
-    }), { soma: 0  }).soma;
+    }), { soma: 0 }).soma;
 
     const soma_recebidos = entradas_recebidas.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
-    }), { soma: 0  }).soma;
+    }), { soma: 0 }).soma;
 
     return {
       soma_receber,
@@ -268,7 +268,7 @@ export const TransacaoBusiness = {
     }
   },
   async somar(tipo, status, mes, ano, userid) {
-    return await TransacaoRepository.somaTransacoes(tipo,status, mes, ano, userid);
+    return await TransacaoRepository.somaTransacoes(tipo, status, mes, ano, userid);
   },
 
   async buscarPorId(id) {
@@ -286,17 +286,17 @@ export const TransacaoBusiness = {
     await this.buscarPorId(id); // garante que existe
     return await TransacaoRepository.excluir(id);
   },
-  
+
   async listaDespesasParceladas(mes, ano, userid) {
     const cartoes = await CartaoRepository.listar(userid);
-    
+
     const mm = String(mes).padStart(2, '0');
     const data_inicio = `${ano}-${mm}-01`;
     const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
     let data_fim = `${ano}-${mm}-${String(ultimoDia).padStart(2, '0')}`;
-    
+
     const parcelas = await TransacaoRepository.listaDespesasParceladas(data_inicio, data_fim, userid);
-    
+
     const array = [];
     array.push(...parcelas);
 
@@ -310,7 +310,7 @@ export const TransacaoBusiness = {
     }
     const mensal = array.reduce((acc, p) => ({
       pendente: acc.pendente + parseFloat(p.valor_pendente_mes)
-    }), { pendente: 0  });
+    }), { pendente: 0 });
 
     return { parcelas: array, mensal };
   },
@@ -318,7 +318,7 @@ export const TransacaoBusiness = {
   async agrupamentoTipo(status, mes, ano, tipo = null, userid) {
 
     const cartoes = await CartaoRepository.listar(userid);
-    
+
     const mm = String(mes).padStart(2, '0');
     const data_inicio = `${ano}-${mm}-01`;
     const ultimoDia = new Date(ano, mes, 0).getDate(); // passar mes como número normal (1-12)
@@ -329,12 +329,12 @@ export const TransacaoBusiness = {
     array.push(...agrupamento);
 
     const soma = array.reduce((acc, p) => ({
-       soma: acc.soma + parseFloat(p.total_tipo)
-    }), {soma: 0})
+      soma: acc.soma + parseFloat(p.total_tipo)
+    }), { soma: 0 })
 
-    return { soma, agrupamento: array}
+    return { soma, agrupamento: array }
   },
-  
+
   async uptopago(id) {
     return await TransacaoRepository.uptopago(id);
   },
@@ -344,9 +344,9 @@ export const TransacaoBusiness = {
 
     const soma = despesa.reduce((acc, p) => ({
       soma: acc.soma + parseFloat(p.valor)
-    }), { soma: 0  }).soma;
+    }), { soma: 0 }).soma;
 
-    return {soma, despesa}
+    return { soma, despesa }
   },
 
   async linhaTemporal(ano, userid) {
@@ -355,9 +355,9 @@ export const TransacaoBusiness = {
   async buscaPorDia(dia, mes, ano, userid) {
     const result = await TransacaoRepository.buscaPorDia(dia, mes, ano, userid);
     const soma = result.reduce((acc, p) => ({
-       soma: acc.soma + parseFloat(p.valor)
-    }), {soma: 0})
-    return { soma, result}
+      soma: acc.soma + parseFloat(p.valor)
+    }), { soma: 0 })
+    return { soma, result }
   },
 
   async extrato(limit, mes, ano, userid) {
