@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors'; // Importar o cors
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 import dashboardRouter from './src/routes/dashboard.routes.js';
 import transacaoRouter from './src/routes/transacao.routes.js';
 import userRouter from './src/routes/user.routes.js';
@@ -11,6 +13,40 @@ import subcategoriaRoutes from "./src/routes/subcategoria.routes.js";
 import planejamentoRoutes from "./src/routes/planejamento.routes.js";
 import objetivosRoutes from "./src/routes/objetivos.routes.js";
 import home from './pages/home.js';
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Gerenciamento API',
+            version: '1.0.0',
+            description: 'API para gerenciamento financeiro pessoal',
+        },
+        servers: [
+            {
+                url: 'http://localhost:3000',
+                description: 'Servidor Local',
+            },
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+    },
+    apis: ['./src/routes/*.js', './index.js'], // Caminhos onde estão as anotações do Swagger
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -43,6 +79,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // Usar as rotas
