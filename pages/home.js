@@ -247,7 +247,7 @@ const home = `<!DOCTYPE html>
         <footer class="tech-stack">
             <p class="tech-title">Developed By</p>
             <div class="tech-icons" style="opacity: 1; font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text-main);">
-                Chagas Duarte
+                <a href="https://github.com/chagasduarte" target="_blank" style="color: inherit; text-decoration: none; transition: color 0.3s ease;">Chagas Duarte</a>
             </div>
         </footer>
     </div>
