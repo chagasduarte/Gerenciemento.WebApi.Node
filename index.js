@@ -27,6 +27,10 @@ const swaggerOptions = {
                 url: 'http://localhost:3000',
                 description: 'Servidor Local',
             },
+            {
+                url: 'https://gerenciamento-web-api-node.vercel.app',
+                description: 'Servidor de Produção (Vercel)',
+            },
         ],
         components: {
             securitySchemes: {
@@ -79,7 +83,18 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerDocs);
+});
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {
+    customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+    customJs: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js'
+    ]
+}));
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // Usar as rotas
