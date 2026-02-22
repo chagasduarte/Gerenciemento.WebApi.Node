@@ -24,16 +24,12 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: '/',
-                description: 'Servidor Atual (Recomendado)',
+                url: 'https://novasapi.vercel.app',
+                description: 'Servidor de Produção (Principal)',
             },
             {
                 url: 'http://localhost:3000',
-                description: 'Servidor Local (Manual)',
-            },
-            {
-                url: 'https://novasapi.vercel.app',
-                description: 'Servidor de Produção (Vercel)',
+                description: 'Servidor Local (Desenvolvimento)',
             },
         ],
         components: {
