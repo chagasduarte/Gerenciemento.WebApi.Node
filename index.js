@@ -88,12 +88,22 @@ app.get('/api-docs.json', (req, res) => {
     res.send(swaggerDocs);
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {
-    customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+// Forçar Content-Type como HTML para o Swagger na Vercel
+app.use('/api-docs', (req, res, next) => {
+    res.setHeader('Content-Type', 'text/html');
+    next();
+}, swaggerUi.serve, swaggerUi.setup(swaggerDocs, {
+    customCssUrl: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+    ],
     customJs: [
         'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js',
         'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js'
-    ]
+    ],
+    swaggerOptions: {
+        url: '/api-docs.json', // URL para o JSON do swagger
+    },
+    explorer: true
 }));
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
