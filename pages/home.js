@@ -245,14 +245,9 @@ const home = `<!DOCTYPE html>
         </section>
 
         <footer class="tech-stack">
-            <p class="tech-title">Powered By</p>
-            <div class="tech-icons">
-                <span class="tech-tag">Node.js</span>
-                <span class="tech-tag">Express</span>
-                <span class="tech-tag">PostgreSQL</span>
-                <span class="tech-tag">Swagger/OpenAPI</span>
-                <span class="tech-tag">JWT Auth</span>
-                <span class="tech-tag">Vercel Edge</span>
+            <p class="tech-title">Developed By</p>
+            <div class="tech-icons" style="opacity: 1; font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text-main);">
+                Chagas Duarte
             </div>
         </footer>
     </div>
