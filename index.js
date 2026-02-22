@@ -32,7 +32,7 @@ const swaggerOptions = {
                 description: 'Servidor Local (Manual)',
             },
             {
-                url: 'https://gerenciamento-web-api-node.vercel.app',
+                url: 'https://novasapi.vercel.app',
                 description: 'Servidor de Produção (Vercel)',
             },
         ],
@@ -71,7 +71,7 @@ const allowedOrigins = [
     'http://localhost:4200',
     'http://localhost:3000',
     'https://gerenciamento-one.vercel.app',
-    'https://gerenciamento-web-api-node.vercel.app'
+    'https://novasapi.vercel.app'
 ];
 
 const corsOptions = {
