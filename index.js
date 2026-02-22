@@ -24,8 +24,12 @@ const swaggerOptions = {
         },
         servers: [
             {
+                url: '/',
+                description: 'Servidor Atual (Recomendado)',
+            },
+            {
                 url: 'http://localhost:3000',
-                description: 'Servidor Local',
+                description: 'Servidor Local (Manual)',
             },
             {
                 url: 'https://gerenciamento-web-api-node.vercel.app',
