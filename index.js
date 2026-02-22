@@ -65,7 +65,9 @@ const PORT = 3000;
 
 const allowedOrigins = [
     'http://localhost:4200',
-    'https://gerenciamento-one.vercel.app'
+    'http://localhost:3000',
+    'https://gerenciamento-one.vercel.app',
+    'https://gerenciamento-web-api-node.vercel.app'
 ];
 
 const corsOptions = {
