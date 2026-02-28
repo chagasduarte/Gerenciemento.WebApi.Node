@@ -12,6 +12,7 @@ import categoriaRoutes from "./src/routes/categoria.routes.js";
 import subcategoriaRoutes from "./src/routes/subcategoria.routes.js";
 import planejamentoRoutes from "./src/routes/planejamento.routes.js";
 import objetivosRoutes from "./src/routes/objetivos.routes.js";
+import aiRoutes from './src/routes/ai.routes.js';
 import home from './pages/home.js';
 
 const swaggerOptions = {
@@ -119,6 +120,7 @@ app.use("/categorias", categoriaRoutes);
 app.use("/subcategorias", subcategoriaRoutes);
 app.use("/planejamento", await autentication, planejamentoRoutes);
 app.use("/objetivos", await autentication, objetivosRoutes);
+app.use("/ai", await autentication, aiRoutes);
 
 // Iniciar o servidor
 app.listen(PORT, () => {
