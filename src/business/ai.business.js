@@ -15,7 +15,7 @@ A estrutura do JSON DEVE conter exatamente estas chaves:
 - "valor" (number): O valor da transação como número, sempre positivo (ex: 50.50).
 - "categoria" (string): A categoria ou subcategoria que mais se adequa (ex: "Alimentação", "Salário", "Transporte"). Tente deduzir de forma lógica.
 - "data" (string): A data da transação no formato "YYYY-MM-DD". Se não for mencionada uma data explícita (como "ontem" ou "hoje"), assuma a data atual de onde você deduz que o usuário está, baseando-se no contexto, ou simplesmente não preencha se não houver contexto mas, idealmente, preencha com a data deduzida. Hoje é ${new Date().toISOString().split('T')[0]}.
-- "ispaycart" (boolean): OPCIONAL, preencha com true apenas se ficar claro que foi o pagamento da fatura de um cartão de crédito. Caso contrário omita ou use false.
+- "ispaycart" (boolean): OPCIONAL, preencha com true apenas se ficar claro que foi o pagamento da fatura de um cartão de crédito ou alguma compra no cartão. caso seja compra será informado 'compra no cartão 'nubank''. Caso contrário omita ou use false.
 
 Exemplo de saída correta e esperada:
 {
