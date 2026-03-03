@@ -1,86 +1,134 @@
+import Groq from "groq-sdk";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+function todayISO() {
+    return new Date().toISOString().slice(0, 10);
+}
+
+function isValidTransaction(obj) {
+    if (!obj || typeof obj !== "object") return false;
+
+    const allowedKeys = new Set(["tipo", "descricao", "valor", "categoria", "data", "ispaycart"]);
+    for (const k of Object.keys(obj)) if (!allowedKeys.has(k)) return false;
+
+    if (obj.tipo !== "entrada" && obj.tipo !== "saida") return false;
+    if (typeof obj.descricao !== "string" || !obj.descricao.trim()) return false;
+    if (typeof obj.categoria !== "string" || !obj.categoria.trim()) return false;
+
+    // valor: number positivo
+    if (typeof obj.valor !== "number" || !Number.isFinite(obj.valor) || obj.valor <= 0) return false;
+
+    // data: YYYY-MM-DD (pode aceitar vazio/ausente se você quiser — aqui eu exijo string)
+    if (typeof obj.data !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(obj.data)) return false;
+
+    // ispaycart opcional
+    if (obj.ispaycart !== undefined && typeof obj.ispaycart !== "boolean") return false;
+
+    return true;
+}
+
+async function runCompletion({ messages, model }) {
+    return groq.chat.completions.create({
+        model,
+        messages,
+        temperature: 0.1,
+        // JSON mode: garante JSON sintaticamente válido (ainda precisa validar esquema)
+        response_format: { type: "json_object" },
+    });
+}
+
 export const AiBusiness = {
     async processMessage(message, base64Image) {
-        if (!process.env.DEEPSEEK_API_KEY) {
-            throw new Error("Chave de API não configurada no servidor (DEEPSEEK_API_KEY).");
+        if (!process.env.GROQ_API_KEY) {
+            throw new Error("GROQ_API_KEY não definida nas variáveis de ambiente.");
         }
 
-        const messages = [
-            {
-                role: "system",
-                content: `Você é um assistente financeiro inteligente. Sua tarefa é extrair informações da mensagem do usuário e convertê-las em uma transação financeira estruturada.
-Sua resposta deve ser estritamente em formato JSON, sem nenhuma outra palavra, saudação ou formatação markdown (sem as tags \`\`\`json).
-A estrutura do JSON DEVE conter exatamente estas chaves:
-- "tipo" (string): "entrada" se for um recebimento/ganho, ou "saida" se for um gasto/despesa.
-- "descricao" (string): Uma breve descrição do que foi a transação (ex: "Almoço Padaria", "Salário Mensal").
-- "valor" (number): O valor da transação como número, sempre positivo (ex: 50.50).
-- "categoria" (string): A categoria ou subcategoria que mais se adequa (ex: "Alimentação", "Salário", "Transporte"). Tente deduzir de forma lógica.
-- "data" (string): A data da transação no formato "YYYY-MM-DD". Se não for mencionada uma data explícita (como "ontem" ou "hoje"), assuma a data atual de onde você deduz que o usuário está, baseando-se no contexto, ou simplesmente não preencha se não houver contexto mas, idealmente, preencha com a data deduzida. Hoje é ${new Date().toISOString().split('T')[0]}.
-- "ispaycart" (boolean): OPCIONAL, preencha com true apenas se ficar claro que foi o pagamento da fatura de um cartão de crédito ou alguma compra no cartão. caso seja compra será informado 'compra no cartão 'nubank''. Caso contrário omita ou use false.
+        // Modelo padrão (texto). Você pode trocar por deepseek-r1-distill-llama-70b se preferir.
+        const TEXT_MODEL = process.env.AI_TEXT_MODEL || "openai/gpt-oss-20b"; // :contentReference[oaicite:3]{index=3}
 
-Exemplo de saída correta e esperada:
-{
-  "tipo": "saida",
-  "descricao": "Almoço Padaria Central",
-  "valor": 45.90,
-  "categoria": "Alimentação",
-  "data": "${new Date().toISOString().split('T')[0]}"
-}`
-            }
-        ];
+        // Se quiser suportar imagem, use um modelo vision da Groq e configure em env:
+        // AI_VISION_MODEL=meta-llama/llama-4-scout-17b-16e-instruct (exemplo)
+        const VISION_MODEL = process.env.AI_VISION_MODEL;
 
+        const systemPrompt = `
+Você é um assistente financeiro inteligente. Extraia informações da mensagem do usuário e converta em uma transação financeira estruturada.
+Responda ESTRITAMENTE em JSON (apenas JSON, sem markdown), com exatamente estas chaves:
+- "tipo": "entrada" ou "saida"
+- "descricao": string
+- "valor": number (positivo)
+- "categoria": string
+- "data": "YYYY-MM-DD" (se não houver data explícita, assuma hoje: ${todayISO()})
+- "ispaycart": boolean (opcional; true apenas se for pagamento/compra no cartão)
+`.trim();
+
+        const messages = [{ role: "system", content: systemPrompt }];
+
+        // ⚠️ Imagens: só envie se você tiver configurado um modelo vision compatível
         if (base64Image) {
+            if (!VISION_MODEL) {
+                throw new Error(
+                    "base64Image foi enviado, mas AI_VISION_MODEL não está configurado. " +
+                    "A Groq só aceita imagens em modelos vision específicos."
+                );
+            }
+
             messages.push({
                 role: "user",
                 content: [
                     { type: "text", text: message },
-                    { type: "image_url", image_url: { url: "data:image/jpeg;base64," + base64Image } }
-                ]
+                    { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } },
+                ],
             });
         } else {
-            messages.push({
-                role: "user",
-                content: message
-            });
+            messages.push({ role: "user", content: message });
         }
+
+        const modelToUse = base64Image ? VISION_MODEL : TEXT_MODEL;
 
         try {
-            const response = await fetch("https://api.deepseek.com/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + process.env.DEEPSEEK_API_KEY
+            // 1ª tentativa
+            const completion1 = await runCompletion({ messages, model: modelToUse });
+            const content1 = completion1.choices?.[0]?.message?.content?.trim() || "{}";
+
+            let parsed;
+            try {
+                parsed = JSON.parse(content1);
+            } catch {
+                parsed = null;
+            }
+
+            // Valida estrutura mínima
+            if (isValidTransaction(parsed)) return parsed;
+
+            // 2ª tentativa (fallback): pede correção do JSON
+            const retryMessages = [
+                ...messages,
+                {
+                    role: "assistant",
+                    content: content1,
                 },
-                body: JSON.stringify({
-                    model: "deepseek-chat", // usaremos o modelo padrão
-                    messages: messages,
-                    temperature: 0.1, // reduzido para ter consistencia e menos criatividade indesejada
-                })
-            });
+                {
+                    role: "user",
+                    content:
+                        "Seu JSON está inválido para o esquema exigido. " +
+                        "Retorne NOVAMENTE apenas JSON com as chaves: tipo, descricao, valor, categoria, data e (opcional) ispaycart. " +
+                        "Sem texto extra.",
+                },
+            ];
 
-            if (!response.ok) {
-                let errorBody;
-                try {
-                    errorBody = await response.text();
-                } catch (e) { }
-                throw new Error("Erro na API DeepSeek: " + response.status + " - " + (errorBody || response.statusText));
+            const completion2 = await runCompletion({ messages: retryMessages, model: modelToUse });
+            const content2 = completion2.choices?.[0]?.message?.content?.trim() || "{}";
+
+            const parsed2 = JSON.parse(content2);
+            if (!isValidTransaction(parsed2)) {
+                throw new Error("A IA retornou JSON, mas fora do esquema esperado.");
             }
 
-            const data = await response.json();
-
-            let aiResponseContent = data.choices[0].message.content.trim();
-
-            if (aiResponseContent.startsWith("```json")) {
-                aiResponseContent = aiResponseContent.replace(/^```json\n/, "").replace(/\n```$/, "");
-            } else if (aiResponseContent.startsWith("```")) {
-                aiResponseContent = aiResponseContent.replace(/^```\n/, "").replace(/\n```$/, "");
-            }
-
-            const transaction = JSON.parse(aiResponseContent);
-
-            return transaction;
+            return parsed2;
         } catch (error) {
-            console.error("Falha ao comunicar com DeepSeek:", error);
+            console.error("Falha ao comunicar com Groq:", error);
             throw error;
         }
-    }
+    },
 };
